@@ -12,15 +12,12 @@ public class BoardManager : MonoBehaviour {
         public int minimum;             //Minimum value for our Count class.
         public int maximum;             //Maximum value for our Count class.
 
-
         //Assignment constructor.
         public Count(int min, int max) {
             minimum = min;
             maximum = max;
-            Debug.Log(max);
         }
     }
-
 
     public int BoardWidth = 10;
     public int BoardHeight = 16;
@@ -34,26 +31,18 @@ public class BoardManager : MonoBehaviour {
     public GameObject[] enemyTiles;
     public GameObject[] outerWallTiles;
 
-
     private Transform boardHolder;
     private List<Vector3> gridPositions = new List<Vector3>();
 
-
-
     void InitialiseList() {
-
         gridPositions.Clear();
 
-
         for (int x = 1; x < BoardWidth; x++) {
-
             for (int y = 1; y < BoardHeight; y++) {
-
                 gridPositions.Add(new Vector3(x, y, 0f));
             }
         }
     }
-
 
     void RandomPathAtoB() {
         Boolean Foundpath = false;
@@ -105,24 +94,17 @@ public class BoardManager : MonoBehaviour {
 
 
 
-    void BoardSetup()
-    {
-        if (boardHolder != null)
-            Destroy(boardHolder);
+    void BoardSetup() {
         boardHolder = new GameObject("Board").transform;
         
         for (int x = -1; x < BoardWidth + 1; x++) {
             for (int y = -1; y < BoardHeight + 1; y++) {
-
                 GameObject toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
-
 
                 if (x == -1 || x == BoardWidth || y == -1 || y == BoardHeight)
                     toInstantiate = outerWallTiles[Random.Range(0, outerWallTiles.Length)];
 
-
                 GameObject instance = Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
-
                 instance.transform.SetParent(boardHolder);
             }
         }
@@ -131,34 +113,24 @@ public class BoardManager : MonoBehaviour {
 
     //RandomPosition returns a random position from our list gridPositions.
     Vector3 RandomPosition() {
-
         int randomIndex = Random.Range(0, gridPositions.Count);
         Vector3 randomPosition = gridPositions[randomIndex];
         gridPositions.RemoveAt(randomIndex);
         return randomPosition;
     }
 
-
-
     void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum) {
-
         int objectCount = Random.Range(minimum, maximum + 1);
 
-
         for (int i = 0; i < objectCount; i++) {
-
             Vector3 randomPosition = RandomPosition();
             GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
             GameObject instance = Instantiate(tileChoice, randomPosition, Quaternion.identity) as GameObject;
             instance.transform.SetParent(boardHolder);
-
         }
-        Debug.Log("saa" + objectCount);
     }
 
     void Layoutpath() {
-
-
         foreach (Vector3 vec in PathPositions) {
             //Choose a random tile from tileArray and assign it to tileChoice
             GameObject tileChoice = exit;
@@ -171,10 +143,9 @@ public class BoardManager : MonoBehaviour {
 
 
 
-    public void SetupScene(int level)
-    {
+    public void SetupScene(int level){
         BoardSetup();
-        RandomPathAtoB();
+        //RandomPathAtoB();
 
         InitialiseList();
 
@@ -182,7 +153,6 @@ public class BoardManager : MonoBehaviour {
         // Uncomment bellow to see procerurally generated map that is done in tutorial
 
         ////Instantiate a random number of wall tiles based on minimum and maximum, at randomized positions.
-        Debug.Log("Wall Max and min " + wallCount.minimum + " " + wallCount.maximum);
         LayoutObjectAtRandom(wallTiles, wallCount.minimum, wallCount.maximum);
 
         ////Determine number of enemies based on current level number, based on a logarithmic progression
@@ -194,7 +164,5 @@ public class BoardManager : MonoBehaviour {
         //Instantiate the exit tile in the upper right hand corner of our game board
         GameObject instance = Instantiate(exit, new Vector3(BoardWidth - 1, BoardHeight - 1, 0f), Quaternion.identity) as GameObject;
         instance.transform.SetParent(boardHolder);
-
-        Resources.UnloadUnusedAssets();
     }
 }
