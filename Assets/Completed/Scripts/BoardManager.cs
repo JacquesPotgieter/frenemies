@@ -26,8 +26,8 @@ namespace Completed
 		}
 		
 		
-		public int columns = 8; 										//Number of columns in our game board.
-		public int rows = 8;											//Number of rows in our game board.
+		public int columns = 8; 										//Number of BoardWidth in our game board.
+		public int rows = 8;											//Number of BoardHeight in our game board.
 		public Count wallCount = new Count (5, 9);						//Lower and upper limit for our random number of walls per level.
 		public Count foodCount = new Count (1, 5);						//Lower and upper limit for our random number of food items per level.
 		public GameObject exit;											//Prefab to spawn for exit.
@@ -47,10 +47,10 @@ namespace Completed
 			//Clear our list gridPositions.
 			gridPositions.Clear ();
 			
-			//Loop through x axis (columns).
+			//Loop through x axis (BoardWidth).
 			for(int x = 1; x < columns-1; x++)
 			{
-				//Within each column, loop through y axis (rows).
+				//Within each column, loop through y axis (BoardHeight).
 				for(int y = 1; y < rows-1; y++)
 				{
 					//At each index add a new Vector3 to our list with the x and y coordinates of that position.

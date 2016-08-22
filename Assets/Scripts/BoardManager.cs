@@ -22,12 +22,11 @@ public class BoardManager : MonoBehaviour {
     }
 
 
-    public static int columns = 8;
-    public static int rows = 8;
+    public int BoardWidth = 10;
+    public int BoardHeight = 16;
     private List<Vector3> PathPositions = new List<Vector3>();
 
     public static Count wallCount = new Count(10, 30);
-    public Count foodCount = new Count(1, 5);
     public GameObject exit;
     public GameObject[] floorTiles;
     public GameObject[] wallTiles;
@@ -46,9 +45,9 @@ public class BoardManager : MonoBehaviour {
         gridPositions.Clear();
 
 
-        for (int x = 1; x < columns; x++) {
+        for (int x = 1; x < BoardWidth; x++) {
 
-            for (int y = 1; y < rows; y++) {
+            for (int y = 1; y < BoardHeight; y++) {
 
                 gridPositions.Add(new Vector3(x, y, 0f));
             }
@@ -62,7 +61,7 @@ public class BoardManager : MonoBehaviour {
         float curY = 0f;
         float PrevcurX = 0f;
         float PrevcurY = 0f;
-        int PrevChoice = 2;
+        int PrevChoice = Random.Range(1, 5);
         Vector3 current = new Vector3(curX, curY, 0f);
         PathPositions.Add(current);
         while (Foundpath == false) {
@@ -88,13 +87,13 @@ public class BoardManager : MonoBehaviour {
                     curX++;
                 }
 
-                if (curX < 0 || curX > (columns - 1) || curY < 0 || curY > (rows - 1)) {
+                if (curX < 0 || curX > (BoardWidth - 1) || curY < 0 || curY > (BoardHeight - 1)) {
                     curX = PrevcurX;
                     curY = PrevcurY;
                 } else {
                     current = new Vector3(curX, curY, 0f);
                     PathPositions.Add(current);
-                    if (curX == columns - 1 && curY == rows - 1) {
+                    if (curX == BoardWidth - 1 && curY == BoardHeight - 1) {
                         Foundpath = true;
                         PathPositions.Remove(current);
                     }
@@ -106,19 +105,19 @@ public class BoardManager : MonoBehaviour {
 
 
 
-    void BoardSetup() {
-
+    void BoardSetup()
+    {
+        if (boardHolder != null)
+            Destroy(boardHolder);
         boardHolder = new GameObject("Board").transform;
-
-
-        for (int x = -1; x < columns + 1; x++) {
-
-            for (int y = -1; y < rows + 1; y++) {
+        
+        for (int x = -1; x < BoardWidth + 1; x++) {
+            for (int y = -1; y < BoardHeight + 1; y++) {
 
                 GameObject toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
 
 
-                if (x == -1 || x == columns || y == -1 || y == rows)
+                if (x == -1 || x == BoardWidth || y == -1 || y == BoardHeight)
                     toInstantiate = outerWallTiles[Random.Range(0, outerWallTiles.Length)];
 
 
@@ -172,8 +171,8 @@ public class BoardManager : MonoBehaviour {
 
 
 
-    public void SetupScene(int level) {
-
+    public void SetupScene(int level)
+    {
         BoardSetup();
         RandomPathAtoB();
 
@@ -186,9 +185,6 @@ public class BoardManager : MonoBehaviour {
         Debug.Log("Wall Max and min " + wallCount.minimum + " " + wallCount.maximum);
         LayoutObjectAtRandom(wallTiles, wallCount.minimum, wallCount.maximum);
 
-        ////Instantiate a random number of food tiles based on minimum and maximum, at randomized positions.
-        LayoutObjectAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
-
         ////Determine number of enemies based on current level number, based on a logarithmic progression
         int enemyCount = (int)Mathf.Log(level, 2f);
 
@@ -196,7 +192,9 @@ public class BoardManager : MonoBehaviour {
         LayoutObjectAtRandom(enemyTiles, enemyCount, enemyCount);
 
         //Instantiate the exit tile in the upper right hand corner of our game board
-        GameObject instance = Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity) as GameObject;
+        GameObject instance = Instantiate(exit, new Vector3(BoardWidth - 1, BoardHeight - 1, 0f), Quaternion.identity) as GameObject;
         instance.transform.SetParent(boardHolder);
+
+        Resources.UnloadUnusedAssets();
     }
 }
