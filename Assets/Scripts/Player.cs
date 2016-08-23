@@ -38,11 +38,11 @@ public class Player : MovingObject {
         if (!GameManager.instance.playersTurn)
             return;
 
-        int horizontal = 0;
-        int vertical = 0;
+        float horizontal = 0;
+        float vertical = 0;
 
-        horizontal = (int)Input.GetAxisRaw("Horizontal");
-        vertical = (int)Input.GetAxisRaw("Vertical");
+        horizontal = Input.GetAxis("Horizontal");
+        vertical = Input.GetAxis("Vertical");
 
         if (horizontal != 0)
             vertical = 0;
@@ -51,7 +51,7 @@ public class Player : MovingObject {
             AttemptMove<Wall>(horizontal, vertical);
     }
 
-    protected override void AttemptMove<T>(int xDir, int yDir) {
+    protected override void AttemptMove<T>(float xDir, float yDir) {
         food--;
         foodText.text = "Food: " + food;
 

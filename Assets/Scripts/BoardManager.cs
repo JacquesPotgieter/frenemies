@@ -19,7 +19,7 @@ public class BoardManager : MonoBehaviour {
         }
     }
 
-    public int BoardWidth = 10;
+    public int BoardWidth = 30;
     public int BoardHeight = 16;
     private List<Vector3> PathPositions = new List<Vector3>();
 

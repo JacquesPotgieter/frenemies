@@ -19,7 +19,7 @@ public class Enemy : MovingObject {
         base.Start();
 	}
 
-    protected override void AttemptMove<T>(int xDir, int yDir) {
+    protected override void AttemptMove<T>(float xDir, float yDir) {
         skipMove = !skipMove;
         if (skipMove)
             return;

@@ -15,7 +15,7 @@ public abstract class MovingObject : MonoBehaviour {
         inverseMoveTime = 1f / moveTime;
 	}
 
-    protected bool Move(int xDir, int yDir, out RaycastHit2D hit) {
+    protected bool Move(float xDir, float yDir, out RaycastHit2D hit) {
         Vector2 start = transform.position;
         Vector2 end = start + new Vector2(xDir, yDir);
 
@@ -31,7 +31,7 @@ public abstract class MovingObject : MonoBehaviour {
         return false;
     }
 
-    protected virtual void AttemptMove<T>(int xDir, int yDir)
+    protected virtual void AttemptMove<T>(float xDir, float yDir)
         where T : Component {
         RaycastHit2D hit;
         bool canMove = Move(xDir, yDir, out hit);
