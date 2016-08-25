@@ -31,6 +31,15 @@ public abstract class MovingObject : MonoBehaviour {
         return false;
     }
 
+    protected virtual void Shoot() {
+        Object prefab = UnityEditor.AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Bullet.prefab", typeof(Bullet));
+        GameObject clone = Instantiate(prefab, transform.position, Quaternion.identity) as GameObject;
+
+        //Bullet bullet = GetComponent("Bullet") as Bullet;
+        //GameObject toInstantiate = Instantiate(Resources.Load("Bullet")) as GameObject;
+        //GameObject instance = Instantiate(toInstantiate, transform.position, Quaternion.identity) as GameObject;       
+    }
+
     protected virtual void AttemptMove<T>(float xDir, float yDir)
         where T : Component {
         RaycastHit2D hit;
@@ -46,14 +55,9 @@ public abstract class MovingObject : MonoBehaviour {
     }
 
     protected IEnumerator SmoothMovement(Vector3 end) {
-        float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
-
-        while (sqrRemainingDistance > float.Epsilon) {
-            Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
-            rb2D.MovePosition(newPosition);
-            sqrRemainingDistance = (transform.position - end).sqrMagnitude;
-            yield return null;
-        }
+        Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
+        rb2D.MovePosition(newPosition);
+        yield return null;
     }
 
     protected abstract void OnCantMove<T>(T component)

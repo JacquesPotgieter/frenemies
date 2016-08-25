@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour {
     public float turnDelay = 0.1f;                          //Delay between each Player turn.
     public int playerFoodPoints = 100;                      //Starting value for Player food points.
     public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
-    [HideInInspector] public bool playersTurn = true;       //Boolean to check if it's players turn, hidden in inspector but public.
 
     private Text levelText;									//Text to display current level number.
     private GameObject levelImage;							//Image to block out level as levels are being set up, background for levelText.
@@ -60,7 +59,7 @@ public class GameManager : MonoBehaviour {
     }
 
     void Update() {
-        if (playersTurn || enemiesMoving || doingSetup)
+        if (doingSetup)
             return;
 
         StartCoroutine(MoveEnemies());
@@ -87,7 +86,5 @@ public class GameManager : MonoBehaviour {
             enemies[i].MoveEnemy();
             yield return new WaitForSeconds(enemies[i].moveTime);
         }
-        playersTurn = true;
-        enemiesMoving = false;
     }
 }

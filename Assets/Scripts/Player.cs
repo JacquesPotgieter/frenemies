@@ -35,24 +35,22 @@ public class Player : MovingObject {
     }
 
     void Update() {
-        if (!GameManager.instance.playersTurn)
-            return;
-
         float horizontal = 0;
         float vertical = 0;
+        bool shooted = false;
 
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
-
-        if (horizontal != 0)
-            vertical = 0;
+        horizontal = Input.GetAxisRaw("Horizontal");
+        vertical = Input.GetAxisRaw("Vertical");
+        shooted = Input.GetKey("f");
 
         if (horizontal != 0 || vertical != 0)
             AttemptMove<Wall>(horizontal, vertical);
+
+        if (shooted)
+            Shoot();
     }
 
     protected override void AttemptMove<T>(float xDir, float yDir) {
-        food--;
         foodText.text = "Food: " + food;
 
         base.AttemptMove<T>(xDir, yDir);
@@ -63,8 +61,6 @@ public class Player : MovingObject {
         }
 
         CheckIfGameOver();
-
-        GameManager.instance.playersTurn = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
