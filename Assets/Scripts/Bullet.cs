@@ -27,9 +27,7 @@ public class Bullet : MovingObject
         float value = 1f;
     }
 
-    protected override void OnCantMove<T>(T component)
-    {
-        Debug.Log("Hit");
+    protected override void OnCollisionEnter2D(Collision2D collision) {
         Destroy(gameObject);
     }
 }

@@ -23,7 +23,8 @@ public class Enemy : MovingObject {
         skipMove = !skipMove;
         if (skipMove)
             return;
-        base.AttemptMove<T>(xDir, yDir);        
+        base.AttemptMove<T>(xDir, yDir);     
+        base.tryShoot(-1 * target.position.x, -1 * target.position.y);   
     }
 
     public void MoveEnemy() {
@@ -38,12 +39,7 @@ public class Enemy : MovingObject {
         AttemptMove<Player>(xDir, yDir);
     }
 
-    protected override void OnCantMove<T>(T component) {
-        Player hitPlayer = component as Player;
-
-        animator.SetTrigger("enemyAttack");
-        hitPlayer.LoseFood(playerDamage);
-
-        SoundManager.instance.RandomizeSfx(enemyAttack1, enemyAttack2);
+    protected override void OnCollisionEnter2D(Collision2D collision) {
+        float value = 1;
     }
 }
