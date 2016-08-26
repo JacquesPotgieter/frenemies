@@ -1,31 +1,35 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Bullet : MonoBehaviour {
-    public GameObject sprite;
-    public float speed = 2;
-
+public class Bullet : MovingObject
+{
     private Vector3 direction;
-    private Vector3 startingPosition;
-    private float inverseSpeed;
+    private MovingObject shooter;
 
-    public void init(Vector3 direction, Vector3 position) {
+    public void init(Vector3 direction, MovingObject shooter) {
         this.direction = direction;
-        this.startingPosition = position;
-
-        inverseSpeed = 1 / speed;
+        this.shooter = shooter;
     }
 
-	// Use this for initialization
+    // Use this for initialization
 	void Start () {
-        Instantiate(sprite, transform.position, Quaternion.identity);
-
-        transform.position = startingPosition;
-
-        Debug.Log("bullet created");
-    }
+        base.moveTime = 0.05f;
+        base.Start();
+	}
 
     void Update() {
+        AttemptMove<Component>(direction.x, direction.y);
+    }
 
+    protected override void AttemptMove<T>(float xDir, float yDir) {
+        base.AttemptMove<T>(xDir, yDir);
+
+        float value = 1f;
+    }
+
+    protected override void OnCantMove<T>(T component)
+    {
+        Debug.Log("Hit");
+        Destroy(gameObject);
     }
 }

@@ -21,14 +21,14 @@ public class Player : MovingObject {
     private Animator animator;
     private int food;
 
-	protected override void Start () {
+    protected override void Start() {
         animator = GetComponent<Animator>();
         food = GameManager.instance.playerFoodPoints;
 
         foodText.text = "Food: " + food;
 
         base.Start();
-	}
+    }
 
     private void OnDisable() {
         GameManager.instance.playerFoodPoints = food;
@@ -41,13 +41,15 @@ public class Player : MovingObject {
 
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
-        shooted = Input.GetKey("f");
+        shooted = Input.GetKeyDown("f");
 
         if (horizontal != 0 || vertical != 0)
             AttemptMove<Wall>(horizontal, vertical);
-
+        else
+            horizontal = 1;
+        
         if (shooted)
-            Shoot();
+            Shoot(horizontal, vertical);
     }
 
     protected override void AttemptMove<T>(float xDir, float yDir) {

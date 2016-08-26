@@ -2,7 +2,7 @@
 using System.Collections;
 
 public abstract class MovingObject : MonoBehaviour {
-    public float moveTime = 0.1f;
+    public float moveTime = 0.15f;
     public LayerMask blockingLayer;
 
     private BoxCollider2D boxcollider;
@@ -31,13 +31,26 @@ public abstract class MovingObject : MonoBehaviour {
         return false;
     }
 
-    protected virtual void Shoot() {
-        Object prefab = UnityEditor.AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Bullet.prefab", typeof(Bullet));
-        GameObject clone = Instantiate(prefab, transform.position, Quaternion.identity) as GameObject;
+    protected virtual void Shoot(float xDir, float yDir) {
+        float offsetX = 0;
+        float offSetY = 0;
 
-        //Bullet bullet = GetComponent("Bullet") as Bullet;
-        //GameObject toInstantiate = Instantiate(Resources.Load("Bullet")) as GameObject;
-        //GameObject instance = Instantiate(toInstantiate, transform.position, Quaternion.identity) as GameObject;       
+        if (xDir > 0)
+            offsetX = boxcollider.size.x;
+        else if (xDir < 0)
+            offsetX = -1 * boxcollider.size.x;
+
+        if (yDir > 0)
+            offSetY = boxcollider.size.y;
+        else if (yDir < 0)
+            offSetY = -1 * boxcollider.size.y;
+
+        Vector3 direction = new Vector3(xDir, yDir, 0f);
+        Vector3 startingPosition = transform.position + new Vector3(offsetX, offSetY, 0f);
+
+        Object prefab = UnityEditor.AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Bullet.prefab", typeof(Bullet));
+        Bullet clone = Instantiate(prefab, startingPosition, Quaternion.identity) as Bullet;     
+        clone.init(direction, this);
     }
 
     protected virtual void AttemptMove<T>(float xDir, float yDir)
