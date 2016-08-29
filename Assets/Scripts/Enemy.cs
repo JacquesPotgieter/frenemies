@@ -13,7 +13,7 @@ public class Enemy : MovingObject {
     public AudioClip EnemyAttack2;
 
 	protected override void Start () {
-        GameManager.instance.AddEnemyToList(this);
+        GameManager.Instance.AddEnemyToList(this);
         _animator = GetComponent<Animator>();
         _target = GameObject.FindGameObjectWithTag("Player").transform;
         base.Start();
@@ -31,10 +31,8 @@ public class Enemy : MovingObject {
         int xDir = 0;
         int yDir = 0;
 
-        if (Mathf.Abs(_target.position.x - transform.position.x) < float.Epsilon)
-            yDir = _target.position.y > transform.position.y ? 1 : -1;
-        else
-            xDir = _target.position.x > transform.position.x ? 1 : -1;
+        yDir = _target.position.y > transform.position.y ? 1 : -1;
+        xDir = _target.position.x > transform.position.x ? 1 : -1;
 
         AttemptMove<Player>(xDir, yDir);
     }

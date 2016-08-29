@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Bullet : MovingObject
-{
+public class Bullet : MovingObject {
     private Vector3 _direction;
     private MovingObject _shooter;
 
