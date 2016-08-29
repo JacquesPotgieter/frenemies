@@ -19,22 +19,31 @@ public class Enemy : MovingObject {
         base.Start();
 	}
 
-    protected override void AttemptMove<T>(float xDir, float yDir) {
-        _skipMove = !_skipMove;
-        if (_skipMove)
-            return;
-        base.AttemptMove<T>(xDir, yDir);     
-        base.tryShoot(-1 * _target.position.x, -1 * _target.position.y);   
+    protected override bool Move(float xDir, float yDir) {
+        bool didMove = base.Move(xDir, yDir);
+        if (didMove) {
+            String movement = "";
+            if (xDir > yDir)
+                movement = xDir < 0 ? "WalkLeft" : "WalkRight";
+            else
+                movement = yDir < 0 ? "WalkUp" : "WalkDown";
+            _animator.SetTrigger(movement);
+        }
+
+        return didMove;
     }
 
     public void MoveEnemy() {
-        int xDir = 0;
-        int yDir = 0;
+        int yDir = _target.position.y > transform.position.y ? 1 : -1;
+        int xDir = _target.position.x > transform.position.x ? 1 : -1;
 
-        yDir = _target.position.y > transform.position.y ? 1 : -1;
-        xDir = _target.position.x > transform.position.x ? 1 : -1;
-
-        AttemptMove<Player>(xDir, yDir);
+        if (_skipMove)
+        {
+            _skipMove = false;
+            Move(xDir, yDir);
+        }
+        else
+            _skipMove = true;
     }
 
     protected override void OnCollisionEnter2D(Collision2D collision) {

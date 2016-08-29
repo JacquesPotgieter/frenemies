@@ -38,31 +38,37 @@ public class Player : MovingObject {
     }
 
     void Update() {
-        float horizontal = Input.GetAxisRaw(HorizontalCtrl);
-        float vertical = Input.GetAxisRaw(VerticalCtrl);
+        float horizontal = Input.GetAxis(HorizontalCtrl);
+        float vertical = Input.GetAxis(VerticalCtrl);
         float shooted = Input.GetAxis(ShootMainButton);
-        float horizontalFire = Input.GetAxisRaw(HorizontalFireCtrl);
-        float verticalFire = Input.GetAxisRaw(VerticalFireCtrl);
+        float horizontalFire = Input.GetAxis(HorizontalFireCtrl);
+        float verticalFire = Input.GetAxis(VerticalFireCtrl);
 
         if (Math.Abs(horizontal) > Double.Epsilon || Math.Abs(vertical) > Double.Epsilon)
-            AttemptMove<Component>(horizontal, vertical);
+            Move(horizontal, vertical);
+        else
+            _animator.SetTrigger("Idle");
 
         if (Math.Abs(horizontalFire) < double.Epsilon && Math.Abs(verticalFire) < double.Epsilon)
             horizontalFire = 1;
         if (shooted > double.Epsilon)
-            tryShoot(horizontalFire, verticalFire);
+            TryShoot(horizontalFire, verticalFire);
     }
 
-    protected override void AttemptMove<T>(float xDir, float yDir) {
-        FoodText.text = "Food: " + _healthPoints;
-
-        base.AttemptMove<T>(xDir, yDir);
-
-        if (Move(xDir, yDir)) {
+    protected override bool Move(float xDir, float yDir) {
+        bool didMove = base.Move(xDir, yDir);
+        if (didMove) {
             SoundManager.Instance.RandomizeSfx(MoveSound1, MoveSound2);
+
+            String movement = "";
+            if (Mathf.Abs(xDir) > Mathf.Abs(yDir)) 
+                movement = xDir < double.Epsilon ? "WalkLeft" : "WalkRight";
+            else 
+                movement = yDir > double.Epsilon ? "WalkUp" : "WalkDown";
+            _animator.SetTrigger(movement);
         }
 
-        CheckIfGameOver();
+        return didMove;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {

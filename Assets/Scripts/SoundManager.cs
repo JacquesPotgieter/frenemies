@@ -28,7 +28,7 @@ public class SoundManager : MonoBehaviour {
         int randomIndex = Random.Range(0, clips.Length);
         float randomPitch = Random.Range(LowPitchRange, HighPitchRange);
 
-        EfxSource.pitch = randomIndex;
+        EfxSource.pitch = randomPitch;
         EfxSource.clip = clips[randomIndex];
         EfxSource.Play();
     }

@@ -45,45 +45,45 @@ public class BoardManager : MonoBehaviour {
     }
 
     void RandomPathAtoB() {
-        Boolean Foundpath = false;
+        Boolean foundpath = false;
         float curX = 0f;
         float curY = 0f;
-        float PrevcurX = 0f;
-        float PrevcurY = 0f;
-        int PrevChoice = Random.Range(1, 5);
+        float prevcurX = 0f;
+        float prevcurY = 0f;
+        int prevChoice = Random.Range(1, 5);
         Vector3 current = new Vector3(curX, curY, 0f);
         _pathPositions.Add(current);
-        while (Foundpath == false) {
+        while (foundpath == false) {
             int choice = Random.Range(1, 5);
-            if (choice == PrevChoice)
+            if (choice == prevChoice)
                 choice = Random.Range(1, 5);
             else {
                 if (choice == 1) {
                     //Go up
-                    PrevcurY = curY;
+                    prevcurY = curY;
                     curY++;
                 } else if (choice == 2) {
                     //Go down
-                    PrevcurY = curY;
+                    prevcurY = curY;
                     curY--;
                 } else if (choice == 3) {
                     //Go left
-                    PrevcurX = curX;
+                    prevcurX = curX;
                     curX--;
                 } else {
                     //Go right
-                    PrevcurX = curX;
+                    prevcurX = curX;
                     curX++;
                 }
 
                 if (curX < 0 || curX > (BoardWidth - 1) || curY < 0 || curY > (BoardHeight - 1)) {
-                    curX = PrevcurX;
-                    curY = PrevcurY;
+                    curX = prevcurX;
+                    curY = prevcurY;
                 } else {
                     current = new Vector3(curX, curY, 0f);
                     _pathPositions.Add(current);
                     if (curX == BoardWidth - 1 && curY == BoardHeight - 1) {
-                        Foundpath = true;
+                        foundpath = true;
                         _pathPositions.Remove(current);
                     }
 

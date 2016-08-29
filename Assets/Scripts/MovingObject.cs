@@ -17,14 +17,14 @@ public abstract class MovingObject : MonoBehaviour {
         _inverseMoveTime = 1f / MoveTime;
 	}
 
-    protected bool Move(float xDir, float yDir) {
+    protected virtual bool Move(float xDir, float yDir) {
         Vector2 start = transform.position;
         Vector2 end = start + new Vector2(xDir, yDir);
         StartCoroutine(SmoothMovement(end));
         return true;
     }
 
-    public void tryShoot(float xDir, float yDir) {
+    public void TryShoot(float xDir, float yDir) {
         if (_canShoot) {
             StartCoroutine(Shoot(xDir, yDir));
         }
@@ -35,30 +35,25 @@ public abstract class MovingObject : MonoBehaviour {
         float offSetY = 0;
 
         if (xDir > 0)
-            offsetX = _boxcollider.size.x;
+            offsetX = (_boxcollider.size.x + _boxcollider.offset.x);
         else if (xDir < 0)
-            offsetX = -1*_boxcollider.size.x;
+            offsetX = -1* (_boxcollider.size.x - _boxcollider.offset.x);
 
         if (yDir > 0)
-            offSetY = _boxcollider.size.y;
+            offSetY = _boxcollider.size.y + _boxcollider.offset.y;
         else if (yDir < 0)
-            offSetY = -1*_boxcollider.size.y;
+            offSetY = -1 * _boxcollider.size.y + _boxcollider.offset.y - 0.35f;
 
-        Vector3 direction = new Vector3(xDir, yDir, 0f);
+        Vector3 direction = new Vector3(xDir * 100f, yDir * 100f, 0f);
         Vector3 startingPosition = transform.position + new Vector3(offsetX, offSetY, 0f);
 
         Object prefab = UnityEditor.AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Bullet.prefab", typeof (Bullet));
         Bullet clone = Instantiate(prefab, startingPosition, Quaternion.identity) as Bullet;
-        clone.init(direction, this);
+        clone.Init(direction, this);
 
         _canShoot = false;
         yield return new WaitForSeconds(TimeBetweenShots);
         _canShoot = true;
-    }
-
-    protected virtual void AttemptMove<T>(float xDir, float yDir)
-        where T : Component {
-        bool canMove = Move(xDir, yDir);
     }
 
     protected IEnumerator SmoothMovement(Vector3 end) {
