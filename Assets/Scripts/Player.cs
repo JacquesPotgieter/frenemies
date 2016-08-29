@@ -4,58 +4,62 @@ using System;
 using UnityEngine.UI;
 
 public class Player : MovingObject {
+    public float RestartLevelDelay = 1f;
+    public Text FoodText;
+    public AudioClip MoveSound1;
+    public AudioClip MoveSound2;
+    public AudioClip EatSound1;
+    public AudioClip EatSound2;
+    public AudioClip DrinkSound1;
+    public AudioClip DrinkSound2;
+    public AudioClip GameOverSound;
 
-    public float restartLevelDelay = 1f;
-    public Text foodText;
-    public AudioClip moveSound1;
-    public AudioClip moveSound2;
-    public AudioClip eatSound1;
-    public AudioClip eatSound2;
-    public AudioClip drinkSound1;
-    public AudioClip drinkSound2;
-    public AudioClip gameOverSound;
+    public string HorizontalCtrl = "Horizontal_P1";
+    public string VerticalCtrl = "Vertical_P1";
+    public string HorizontalFireCtrl = "HorizontalFire_P1";
+    public string VerticalFireCtrl = "VerticalFire_P1";
+    public string ShootMainButton = "Fire1_P1";
+    public string ShootAltButton = "Fire2_P1";
 
-    private Animator animator;
-    private int healthPoints;
+    private Animator _animator;
+    private int _healthPoints;
 
     protected override void Start() {
-        animator = GetComponent<Animator>();
-        healthPoints = GameManager.instance.player1HP;
+        _animator = GetComponent<Animator>();
+        _healthPoints = GameManager.Instance.HealthP1;
 
-        foodText.text = "Food: " + healthPoints;
+        FoodText.text = "Food: " + _healthPoints;
 
         base.Start();
     }
 
     private void OnDisable() {
-        GameManager.instance.player1HP = healthPoints;
+        GameManager.Instance.HealthP1 = _healthPoints;
     }
 
     void Update() {
-        float horizontal = 0f;
-        float vertical = 0f;
-        bool shooted = false;
+        float horizontal = Input.GetAxisRaw(HorizontalCtrl);
+        float vertical = Input.GetAxisRaw(VerticalCtrl);
+        float shooted = Input.GetAxis(ShootMainButton);
+        float horizontalFire = Input.GetAxisRaw(HorizontalFireCtrl);
+        float verticalFire = Input.GetAxisRaw(VerticalFireCtrl);
 
-        horizontal = Input.GetAxisRaw("Horizontal");
-        vertical = Input.GetAxisRaw("Vertical");
-        shooted = Input.GetKey("f");
+        if (Math.Abs(horizontal) > Double.Epsilon || Math.Abs(vertical) > Double.Epsilon)
+            AttemptMove<Component>(horizontal, vertical);
 
-        if (horizontal != 0 || vertical != 0)
-            AttemptMove<Wall>(horizontal, vertical);
-        else
-            horizontal = 1;
-        
-        if (shooted)
-            tryShoot(horizontal, vertical);
+        if (Math.Abs(horizontalFire) < double.Epsilon && Math.Abs(verticalFire) < double.Epsilon)
+            horizontalFire = 1;
+        if (shooted > double.Epsilon)
+            tryShoot(horizontalFire, verticalFire);
     }
 
     protected override void AttemptMove<T>(float xDir, float yDir) {
-        foodText.text = "Food: " + healthPoints;
+        FoodText.text = "Food: " + _healthPoints;
 
         base.AttemptMove<T>(xDir, yDir);
 
         if (Move(xDir, yDir)) {
-            SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
+            SoundManager.Instance.RandomizeSfx(MoveSound1, MoveSound2);
         }
 
         CheckIfGameOver();
@@ -63,7 +67,7 @@ public class Player : MovingObject {
 
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.tag == "Exit") {
-            Invoke("Restart", restartLevelDelay);
+            Invoke("Restart", RestartLevelDelay);
             enabled = false;
         } 
     }
@@ -73,21 +77,21 @@ public class Player : MovingObject {
     }
 
     public void LoseFood(int loss) {
-        animator.SetTrigger("playerHit");
-        healthPoints -= loss;
-        foodText.text = "-" + loss + " Food: " + healthPoints;
+        _animator.SetTrigger("playerHit");
+        _healthPoints -= loss;
+        FoodText.text = "-" + loss + " Food: " + _healthPoints;
         CheckIfGameOver();
     }
 
     private void CheckIfGameOver() {
-        if (healthPoints <= 0) {
-            SoundManager.instance.PlaySingle(gameOverSound);
-            SoundManager.instance.musicSource.Stop();
-            GameManager.instance.GameOver();
+        if (_healthPoints <= 0) {
+            SoundManager.Instance.PlaySingle(GameOverSound);
+            SoundManager.Instance.MusicSource.Stop();
+            GameManager.Instance.GameOver();
         }
     }
 
     protected override void OnCollisionEnter2D(Collision2D collision) {
-        float val = 1f;
+        Debug.Log("I was hit");
     }
 }

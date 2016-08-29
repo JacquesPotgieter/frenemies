@@ -2,20 +2,19 @@
 using System.Collections;
 
 public abstract class MovingObject : MonoBehaviour {
-    public float timeBetweenShots = 0.2f;
-    public float moveTime = 0.15f;
-    public LayerMask blockingLayer;
+    public float TimeBetweenShots = 0.2f;
+    public float MoveTime = 0.15f;
+    public LayerMask BlockingLayer;
 
-    private BoxCollider2D boxcollider;
-    private Rigidbody2D rb2D;
-    private float inverseMoveTime;
-    private float lastShotFired = 0f;
-    private bool canShoot = true;
+    private BoxCollider2D _boxcollider;
+    private Rigidbody2D _rb2D;
+    private float _inverseMoveTime;
+    private bool _canShoot = true;
 
 	protected virtual void Start () {
-        boxcollider = GetComponent<BoxCollider2D>();
-        rb2D = GetComponent<Rigidbody2D>();
-        inverseMoveTime = 1f / moveTime;
+        _boxcollider = GetComponent<BoxCollider2D>();
+        _rb2D = GetComponent<Rigidbody2D>();
+        _inverseMoveTime = 1f / MoveTime;
 	}
 
     protected bool Move(float xDir, float yDir) {
@@ -26,7 +25,7 @@ public abstract class MovingObject : MonoBehaviour {
     }
 
     public void tryShoot(float xDir, float yDir) {
-        if (canShoot) {
+        if (_canShoot) {
             StartCoroutine(Shoot(xDir, yDir));
         }
     }
@@ -36,14 +35,14 @@ public abstract class MovingObject : MonoBehaviour {
         float offSetY = 0;
 
         if (xDir > 0)
-            offsetX = boxcollider.size.x;
+            offsetX = _boxcollider.size.x;
         else if (xDir < 0)
-            offsetX = -1*boxcollider.size.x;
+            offsetX = -1*_boxcollider.size.x;
 
         if (yDir > 0)
-            offSetY = boxcollider.size.y;
+            offSetY = _boxcollider.size.y;
         else if (yDir < 0)
-            offSetY = -1*boxcollider.size.y;
+            offSetY = -1*_boxcollider.size.y;
 
         Vector3 direction = new Vector3(xDir, yDir, 0f);
         Vector3 startingPosition = transform.position + new Vector3(offsetX, offSetY, 0f);
@@ -52,9 +51,9 @@ public abstract class MovingObject : MonoBehaviour {
         Bullet clone = Instantiate(prefab, startingPosition, Quaternion.identity) as Bullet;
         clone.init(direction, this);
 
-        canShoot = false;
-        yield return new WaitForSeconds(timeBetweenShots);
-        canShoot = true;
+        _canShoot = false;
+        yield return new WaitForSeconds(TimeBetweenShots);
+        _canShoot = true;
     }
 
     protected virtual void AttemptMove<T>(float xDir, float yDir)
@@ -63,8 +62,8 @@ public abstract class MovingObject : MonoBehaviour {
     }
 
     protected IEnumerator SmoothMovement(Vector3 end) {
-        Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
-        rb2D.MovePosition(newPosition);
+        Vector3 newPosition = Vector3.MoveTowards(_rb2D.position, end, _inverseMoveTime * Time.deltaTime);
+        _rb2D.MovePosition(newPosition);
         yield return null;
     }
 
