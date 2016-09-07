@@ -7,8 +7,8 @@ public class GameManager : MonoBehaviour {
 
     public float LevelStartDelay = 2f;						
     public float TurnDelay = 0.1f;                          
-    public int HealthP1 = 100;
-    public int HealthP2 = 100;              
+    [HideInInspector] public int HealthP1 = 100;
+    [HideInInspector] public int HealthP2 = 100;              
     public static GameManager Instance = null;              
 
     private Text _levelText;									
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour {
             yield return new WaitForSeconds(TurnDelay);        
 
         for (int i = 0; i < _enemies.Count; i++) {
-            _enemies[i].MoveEnemy();
+            _enemies[i].UpdateEnemy();
             yield return new WaitForSeconds(_enemies[i].MoveTime);
         }
     }

@@ -4,20 +4,29 @@ using System;
 
 public class Enemy : MovingObject {
 
-    public int PlayerDamage;
-
-    private Animator _animator;
-    private Transform _target;
-    private bool _skipMove = true;
+    public int PlayerDamage;    
     public AudioClip EnemyAttack1;
     public AudioClip EnemyAttack2;
 
-	protected override void Start () {
+    private int _healthPoints = 100;
+    private Animator _animator;
+    private Transform _target;
+    private bool _skipMove = true;
+    private bool isDead = false;
+
+    protected override void Start () {
         GameManager.Instance.AddEnemyToList(this);
         _animator = GetComponent<Animator>();
         _target = GameObject.FindGameObjectWithTag("Player").transform;
         base.Start();
 	}
+
+    public void UpdateEnemy() {
+        if (!isDead) {
+            MoveEnemy();
+            CheckIfGameOver();
+        }
+    }
 
     protected override bool Move(float xDir, float yDir) {
         bool didMove = base.Move(xDir, yDir);
@@ -31,14 +40,13 @@ public class Enemy : MovingObject {
         }
 
         return didMove;
-    }
+    }    
 
-    public void MoveEnemy() {
+    private void MoveEnemy() {
         int yDir = _target.position.y > transform.position.y ? 1 : -1;
         int xDir = _target.position.x > transform.position.x ? 1 : -1;
 
-        if (_skipMove)
-        {
+        if (_skipMove) {
             _skipMove = false;
             Move(xDir, yDir);
         }
@@ -46,7 +54,23 @@ public class Enemy : MovingObject {
             _skipMove = true;
     }
 
+    private void CheckIfGameOver() {
+        if (_healthPoints <= 0) {
+            _animator.SetTrigger("Dead");
+            isDead = true;
+
+            Destroy(gameObject);
+        }
+    }
+
     protected override void OnCollisionEnter2D(Collision2D collision) {
-        float value = 1;
+        if (collision.collider.tag == "Bullet") {
+            MainBulletHit(collision);
+        }
+    }
+
+    private void MainBulletHit(Collision2D collision) {
+        Bullet bullet = collision.gameObject.GetComponent<Bullet>();
+        this._healthPoints -= bullet.DamageDone;
     }
 }
