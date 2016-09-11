@@ -117,14 +117,14 @@ public class BoardManager : MonoBehaviour {
         return randomPosition;
     }
 
-    void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum) {
+    void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum, Transform boardHolder) {
         int objectCount = Random.Range(minimum, maximum + 1);
 
         for (int i = 0; i < objectCount; i++) {
             Vector3 randomPosition = RandomPosition();
             GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
             GameObject instance = Instantiate(tileChoice, randomPosition, Quaternion.identity) as GameObject;
-            instance.transform.SetParent(_boardHolder);
+            instance.transform.SetParent(boardHolder);
         }
     }
 
@@ -139,8 +139,6 @@ public class BoardManager : MonoBehaviour {
         }
     }
 
-
-
     public void SetupScene(int level){
         BoardSetup();
         //RandomPathAtoB();
@@ -151,13 +149,14 @@ public class BoardManager : MonoBehaviour {
         // Uncomment bellow to see procerurally generated map that is done in tutorial
 
         ////Instantiate a random number of wall tiles based on minimum and maximum, at randomized positions.
-        LayoutObjectAtRandom(WallTiles, WallCount.Minimum, WallCount.Maximum);
+        LayoutObjectAtRandom(WallTiles, WallCount.Minimum, WallCount.Maximum, _boardHolder);
 
         ////Determine number of enemies based on current level number, based on a logarithmic progression
         int enemyCount = (int)Mathf.Log(level, 2f);
 
         ////Instantiate a random number of enemies based on minimum and maximum, at randomized positions.
-        LayoutObjectAtRandom(EnemyTiles, enemyCount, enemyCount);
+        Transform enemyHolder = new GameObject("Enemies").transform;
+        LayoutObjectAtRandom(EnemyTiles, enemyCount, enemyCount, enemyHolder);
 
         //Instantiate the exit tile in the upper right hand corner of our game board
         GameObject instance = Instantiate(Exit, new Vector3(BoardWidth - 1, BoardHeight - 1, 0f), Quaternion.identity) as GameObject;

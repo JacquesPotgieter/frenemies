@@ -5,6 +5,7 @@ public abstract class MovingObject : MonoBehaviour {
     public float TimeBetweenShots = 0.4f;
     public float MoveTime = 0.15f;
     public LayerMask BlockingLayer;
+    public int DamageDealt = 5;
 
     private BoxCollider2D _boxcollider;
     private Rigidbody2D _rb2D;
@@ -17,10 +18,10 @@ public abstract class MovingObject : MonoBehaviour {
         _inverseMoveTime = 1f / MoveTime;
 	}
 
-    protected virtual bool Move(float xDir, float yDir) {
+    public virtual bool Move(float xDir, float yDir) {
         Vector2 start = transform.position;
         Vector2 end = start + new Vector2(xDir, yDir);
-        StartCoroutine(SmoothMovement(end));
+        SmoothMovement(end);
         return true;
     }
 
@@ -58,10 +59,9 @@ public abstract class MovingObject : MonoBehaviour {
         _canShoot = true;
     }
 
-    protected IEnumerator SmoothMovement(Vector3 end) {
+    protected void SmoothMovement(Vector3 end) {
         Vector3 newPosition = Vector3.MoveTowards(_rb2D.position, end, _inverseMoveTime * Time.deltaTime);
         _rb2D.MovePosition(newPosition);
-        yield return null;
     }
 
     protected abstract void OnCollisionEnter2D(Collision2D collision);

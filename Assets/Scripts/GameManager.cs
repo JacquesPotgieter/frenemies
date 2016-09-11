@@ -9,13 +9,15 @@ public class GameManager : MonoBehaviour {
     public float TurnDelay = 0.1f;                          
     [HideInInspector] public int HealthP1 = 100;
     [HideInInspector] public int HealthP2 = 100;              
-    public static GameManager Instance = null;              
+    public static GameManager Instance = null;  
+    
+    [HideInInspector] public List<Player> players;
+    [HideInInspector] public List<Enemy> enemies;            
 
     private Text _levelText;									
     private GameObject _levelImage;							
     private BoardManager _boardScript;                       
-    private int _level = 1;                                  
-    private List<Enemy> _enemies;                                                       
+    private int _level = 2;                                                                                      
     private bool _doingSetup;                                
     
     void Awake() {
@@ -25,7 +27,8 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
 
         DontDestroyOnLoad(gameObject);
-        _enemies = new List<Enemy>();
+        enemies = new List<Enemy>();
+        players = new List<Player>();
         _boardScript = GetComponent<BoardManager>();
         InitGame();
     }
@@ -44,13 +47,18 @@ public class GameManager : MonoBehaviour {
         _levelImage.SetActive(true);
 
         Invoke("HideLevelImage", LevelStartDelay);
-        _enemies.Clear();
+        enemies.Clear();
+        this.players.Clear();
 
         _boardScript.SetupScene(_level);
 
         GameObject camera = GameObject.Find("Main Camera");
         camera.transform.position = new Vector3(_boardScript.BoardWidth / 2f, _boardScript.BoardHeight / 2f, -10f);
         Camera.main.orthographicSize = _boardScript.BoardHeight / 2 + 2;
+
+        Player[] players = GetComponents<Player>();
+        for (int i = 0; i < players.Length; i++)
+            this.players.Add(players[i]);
     }
 
     void HideLevelImage() {
@@ -66,7 +74,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void AddEnemyToList(Enemy script) {
-        _enemies.Add(script);
+        enemies.Add(script);
     }
 
     public void GameOver() {
@@ -78,12 +86,12 @@ public class GameManager : MonoBehaviour {
     IEnumerator MoveEnemies() {
         yield return new WaitForSeconds(TurnDelay);
 
-        if (_enemies.Count == 0) 
+        if (enemies.Count == 0) 
             yield return new WaitForSeconds(TurnDelay);        
 
-        for (int i = 0; i < _enemies.Count; i++) {
-            _enemies[i].UpdateEnemy();
-            yield return new WaitForSeconds(_enemies[i].MoveTime);
+        for (int i = 0; i < enemies.Count; i++) {
+            enemies[i].UpdateEnemy();
+            yield return new WaitForSeconds(enemies[i].MoveTime);
         }
     }
 }

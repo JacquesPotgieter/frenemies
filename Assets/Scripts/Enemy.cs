@@ -3,32 +3,35 @@ using System.Collections;
 using System;
 
 public class Enemy : MovingObject {
+   
+    public AI_Controller AI_controller;
 
-    public int PlayerDamage;    
-    public AudioClip EnemyAttack1;
-    public AudioClip EnemyAttack2;
-
-    private int _healthPoints = 100;
+    private int _healthPoints;
     private Animator _animator;
-    private Transform _target;
-    private bool _skipMove = true;
     private bool isDead = false;
+
+    public void init(AI_Controller AI_controller, int health, int damage, RuntimeAnimatorController animator) {
+        this.AI_controller = AI_controller;
+        this._healthPoints = health;
+        this.DamageDealt = damage;
+        //this._animator.runtimeAnimatorController = animator;
+    }
 
     protected override void Start () {
         GameManager.Instance.AddEnemyToList(this);
         _animator = GetComponent<Animator>();
-        _target = GameObject.FindGameObjectWithTag("Player").transform;
+        AssignEnemy.run(this);
         base.Start();
 	}
 
     public void UpdateEnemy() {
         if (!isDead) {
-            MoveEnemy();
             CheckIfGameOver();
+            AI_controller.run();
         }
     }
 
-    protected override bool Move(float xDir, float yDir) {
+    public override bool Move(float xDir, float yDir) {
         bool didMove = base.Move(xDir, yDir);
         if (didMove) {
             String movement = "";
@@ -41,18 +44,6 @@ public class Enemy : MovingObject {
 
         return didMove;
     }    
-
-    private void MoveEnemy() {
-        int yDir = _target.position.y > transform.position.y ? 1 : -1;
-        int xDir = _target.position.x > transform.position.x ? 1 : -1;
-
-        if (_skipMove) {
-            _skipMove = false;
-            Move(xDir, yDir);
-        }
-        else
-            _skipMove = true;
-    }
 
     private void CheckIfGameOver() {
         if (_healthPoints <= 0) {

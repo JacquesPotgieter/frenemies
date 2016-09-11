@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class Player : MovingObject {
     public string PlayerNumber = "1";
-    public int DamageDealt = 5;
     public float RestartLevelDelay = 1f;
     public Text HealthText;
     public AudioClip MoveSound1;
@@ -28,6 +27,7 @@ public class Player : MovingObject {
     private bool isDead = false;
 
     protected override void Start() {
+        GameManager.Instance.players.Add(this);
         _animator = GetComponent<Animator>();
         if (PlayerNumber.Equals("1"))
             _healthPoints = GameManager.Instance.HealthP1;
@@ -69,7 +69,7 @@ public class Player : MovingObject {
         }
     }
 
-    protected override bool Move(float xDir, float yDir) {
+    public override bool Move(float xDir, float yDir) {
         bool didMove = base.Move(xDir, yDir);
         if (didMove) {
             SoundManager.Instance.RandomizeSfx(MoveSound1, MoveSound2);
