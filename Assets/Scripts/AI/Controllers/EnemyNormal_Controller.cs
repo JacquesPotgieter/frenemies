@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class EnemyNormalController : AI_Controller {
 
-    private float minDistance = 5;
+    private float minDistance = 0.1f;
 
     public override void run() {
         changeTarget();

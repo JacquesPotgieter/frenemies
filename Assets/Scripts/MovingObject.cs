@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public abstract class MovingObject : MonoBehaviour {
     public float TimeBetweenShots = 0.4f;
@@ -11,6 +12,8 @@ public abstract class MovingObject : MonoBehaviour {
     private Rigidbody2D _rb2D;
     private float _inverseMoveTime;
     private bool _canShoot = true;
+
+    [HideInInspector] public List<Vector2> movement;
 
 	protected virtual void Start () {
         _boxcollider = GetComponent<BoxCollider2D>();
