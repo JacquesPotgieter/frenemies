@@ -3,21 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 
 public abstract class MovingObject : MonoBehaviour {
-    public float TimeBetweenShots = 0.4f;
+    public float TimeBetweenShotsMain = 0.4f;
+    public float TimeBetweenShotsAlt = 0.4f;
+    public float TimeFrozenPerStep = 0.8f;
+    public float HitsBeforeFrozen = 5;
     public float MoveTime = 0.15f;
     public LayerMask BlockingLayer;
     public int DamageDealt = 5;
 
     private BoxCollider2D _boxcollider;
     private Rigidbody2D _rb2D;
-    private float _inverseMoveTime;
+    protected float _inverseMoveTime;
     private bool _canShoot = true;
 
 	protected virtual void Start () {
         _boxcollider = GetComponent<BoxCollider2D>();
         _rb2D = GetComponent<Rigidbody2D>();
-        _inverseMoveTime = 1f / MoveTime;
+        resetMoveTime();
 	}
+
+    protected void resetMoveTime() {
+        _inverseMoveTime = 1f / MoveTime;
+    }
 
     public virtual bool Move(float xDir, float yDir) {
         Vector2 start = transform.position;
@@ -33,30 +40,40 @@ public abstract class MovingObject : MonoBehaviour {
     }
 
     private IEnumerator Shoot(float xDir, float yDir, bool mainFire, int bulletDamage) {
-        float offsetX = 0;
-        float offSetY = 0;
+        Vector3 direction = new Vector3(xDir * 100f, yDir * 100f, 1f);
 
-        float movedAway = 0.15f;
+        float absX = Mathf.Abs(xDir);
+        float absY = Mathf.Abs(yDir);
 
-        if (xDir > 0)
-            offsetX = _boxcollider.size.x + _boxcollider.offset.x + movedAway;
-        else if (xDir < 0)
-            offsetX = -1 * (_boxcollider.size.x + _boxcollider.offset.x + movedAway);
+        if (absX > absY) {
+            yDir = yDir / absX;
+            xDir = xDir / absX;
+        } else {
+            xDir = xDir / absY;
+            yDir = yDir / absY;
+        }
+        Vector3 startingPosition = transform.position;
 
-        if (yDir > 0)
-            offSetY = (_boxcollider.size.y + _boxcollider.offset.y + movedAway);
-        else if (yDir < 0)
-            offSetY = -1 * (_boxcollider.size.y + _boxcollider.offset.y + movedAway * 5);
+        if (yDir < -0.5) 
+            startingPosition.y -= (_boxcollider.size.y + 0.5f);   
+        
+        if (yDir > 0.5)
+            startingPosition.y += (_boxcollider.size.y + 0.1f);
 
-        Vector3 direction = new Vector3(xDir * 100f, yDir * 100f, 0f);
-        Vector3 startingPosition = transform.position + new Vector3(offsetX, offSetY, 0f);
+        if (xDir > 0.5)
+            startingPosition.x += (_boxcollider.size.x + 0.2f);
+        if (xDir < -0.5)
+            startingPosition.x -= (_boxcollider.size.x + 0.2f);
 
         Object prefab = UnityEditor.AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Bullet.prefab", typeof (Bullet));
         Bullet clone = Instantiate(prefab, startingPosition, Quaternion.identity) as Bullet;
         clone.Init(direction, this, mainFire, bulletDamage);
 
         _canShoot = false;
-        yield return new WaitForSeconds(TimeBetweenShots);
+        if (mainFire)
+            yield return new WaitForSeconds(TimeBetweenShotsMain);
+        else
+            yield return new WaitForSeconds(TimeBetweenShotsAlt);
         _canShoot = true;
     }
 

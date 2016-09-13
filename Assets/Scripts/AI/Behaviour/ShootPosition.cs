@@ -4,9 +4,9 @@ using System.Collections;
 public class ShootPosition : MonoBehaviour {
 
     public static void run(MovingObject currentObject, Vector3 position, bool MainFire) {
-        int yDir = position.y > currentObject.transform.position.y ? 1 : -1;
-        int xDir = position.x > currentObject.transform.position.x ? 1 : -1;
+        float dY = currentObject.transform.position.y - position.y;
+        float dX = currentObject.transform.position.x - position.x;
 
-        currentObject.TryShoot(yDir, xDir, MainFire, currentObject.DamageDealt);
+        currentObject.TryShoot(-dX, -dY, MainFire, currentObject.DamageDealt);
     }
 }

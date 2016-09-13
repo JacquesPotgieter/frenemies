@@ -27,9 +27,14 @@ public class MoveToPosition : MonoBehaviour {
         Vector2 startingPosition = currentObject.transform.position;
         target = new Vector2(Mathf.RoundToInt(target.x),
             Mathf.RoundToInt(target.y));
+
+        if (target.x < 0)
+            target.x = 0;
+        if (target.y < 0)
+            target.y = 0;
         Dictionary<Vector2, Point> grid = new Dictionary<Vector2, Point>();
-        for (int x = 1; x < GameManager.Instance._boardScript.BoardWidth; x++) {
-            for (int y = 1; y < GameManager.Instance._boardScript.BoardHeight; y++) {
+        for (int x = 0; x <= GameManager.Instance._boardScript.BoardWidth; x++) {
+            for (int y = 0; y <= GameManager.Instance._boardScript.BoardHeight; y++) {
                 Vector2 pos = new Vector2(x, y);
                 Point point = new Point();
                 point.position = pos;

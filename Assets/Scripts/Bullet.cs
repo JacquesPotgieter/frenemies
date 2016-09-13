@@ -25,10 +25,16 @@ public class Bullet : MovingObject {
         if (_mainFire)
             gameObject.GetComponent<SpriteRenderer>().material.color = Color.red;
         else
-            gameObject.GetComponent<SpriteRenderer>().material.color = Color.green;
+            gameObject.GetComponent<SpriteRenderer>().material.color = Color.black;
+
+        if (_shooter.tag.Equals("Enemy")) {
+            if (_mainFire)
+                gameObject.GetComponent<SpriteRenderer>().material.color = Color.red;
+            else
+                gameObject.GetComponent<SpriteRenderer>().material.color = Color.black;
+        }
     }
 
-    // Use this for initialization
 	void Start () {
         base.MoveTime = 0.05f;
         base.Start();
@@ -39,7 +45,6 @@ public class Bullet : MovingObject {
     }
 
     protected override void OnCollisionEnter2D(Collision2D collision) {
-        if (collision.gameObject != _shooter)
-            Destroy(gameObject);
+        Destroy(gameObject);
     }
 }

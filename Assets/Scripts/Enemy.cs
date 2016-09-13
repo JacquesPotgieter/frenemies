@@ -9,6 +9,7 @@ public class Enemy : MovingObject {
     private int _healthPoints;
     private Animator _animator;
     private bool isDead = false;
+    private int frozenHits = 1;
 
     public void init(AI_Controller AI_controller, int health, int damage, RuntimeAnimatorController animator) {
         this.AI_controller = AI_controller;
@@ -56,12 +57,28 @@ public class Enemy : MovingObject {
 
     protected override void OnCollisionEnter2D(Collision2D collision) {
         if (collision.collider.tag == "Bullet") {
-            MainBulletHit(collision);
+            Bullet bullet = collision.collider.GetComponent<Bullet>();
+            if (!bullet._shooter.tag.Equals("Enemy")) {
+                if (bullet._mainFire)
+                    MainBulletHit(collision);
+                else
+                    StartCoroutine(AltBulletHit(collision));
+            }
         }
     }
 
     private void MainBulletHit(Collision2D collision) {
         Bullet bullet = collision.gameObject.GetComponent<Bullet>();
         this._healthPoints -= bullet.DamageDone;
+    }
+
+    private IEnumerator AltBulletHit(Collision2D collision) {
+        if (this.frozenHits < HitsBeforeFrozen) {
+            this.frozenHits++;
+            _inverseMoveTime = 1 / (MoveTime * frozenHits * 2);
+            yield return new WaitForSeconds(TimeFrozenPerStep);
+            this.frozenHits--;
+            _inverseMoveTime = 1 / (MoveTime * frozenHits * 2);
+        }
     }
 }
