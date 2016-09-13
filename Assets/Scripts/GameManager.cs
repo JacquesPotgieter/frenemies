@@ -12,11 +12,11 @@ public class GameManager : MonoBehaviour {
     public static GameManager Instance = null;  
     
     [HideInInspector] public List<Player> players;
-    [HideInInspector] public List<Enemy> enemies;            
+    [HideInInspector] public List<Enemy> enemies;
+    [HideInInspector] public BoardManager _boardScript;
 
     private Text _levelText;									
-    private GameObject _levelImage;							
-    private BoardManager _boardScript;                       
+    private GameObject _levelImage;                      
     private int _level = 2;                                                                                      
     private bool _doingSetup;                                
     

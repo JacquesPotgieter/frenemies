@@ -7,181 +7,153 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using UnityEditor.VersionControl;
 public class MoveToPosition : MonoBehaviour {
-    private static int pos = 0;
-    private static float lastDistance = float.MaxValue;
-    private static Vector2 target;
-     
-    public static void run(MovingObject currentObject, Vector3 position) {
-        Vector2 start = new Vector2(Mathf.RoundToInt(currentObject.transform.position.x),
-            Mathf.RoundToInt(currentObject.transform.position.y));
 
-        if (pos >= currentObject.movement.Count) {
-            currentObject.movement = aStarSearch(start, position);
-            pos = 0;
-            target = position;
+    private class Point {
+        public Vector2 position;
+        public float gScore = 0;
+        public float hScore = 0;
+        public NodeState state = NodeState.Untested;
+        public Point previous;
+        public bool isWalkable;
+
+        public float getFscore() {
+            return gScore + hScore;
         }
 
-
-        Vector2 end = getCurrentMove(currentObject.movement, start);
-        float yDir = end.y - start.y;
-        float xDir = end.x - start.x;
-
-        if (Mathf.Abs(xDir) > double.Epsilon || Mathf.Abs(yDir) > double.Epsilon)
-            currentObject.Move(xDir, yDir);
+        public enum NodeState { Untested, Open, Closed }
     }
 
-    private static Vector2 getCurrentMove(List<Vector2> movement, Vector2 current) {
-        for (; pos < movement.Count; pos++)
+    public static void run(MovingObject currentObject, Vector3 target) {
+        Vector2 startingPosition = currentObject.transform.position;
+        target = new Vector2(Mathf.RoundToInt(target.x),
+            Mathf.RoundToInt(target.y));
+        Dictionary<Vector2, Point> grid = new Dictionary<Vector2, Point>();
+        for (int x = 1; x < GameManager.Instance._boardScript.BoardWidth; x++) {
+            for (int y = 1; y < GameManager.Instance._boardScript.BoardHeight; y++) {
+                Vector2 pos = new Vector2(x, y);
+                Point point = new Point();
+                point.position = pos;
+                point.gScore = distance(startingPosition, pos);
+                point.hScore = distance(pos, target);
+                point.isWalkable = GameManager.Instance._boardScript._gridPositions[pos];
+                point.previous = null;
+
+                grid.Add(pos, point);
+            }
+        }
+        Vector2 start = new Vector2(Mathf.RoundToInt(startingPosition.x), 
+            Mathf.RoundToInt(startingPosition.y));
+        if (grid.ContainsKey(start))
         {
-            float tempD = Vector2.Distance(movement[pos], target);
-
-            if (tempD < lastDistance)
+            bool success = search(grid[start], grid, target);
+            if (success)
             {
-                lastDistance = tempD;
-                return movement[pos];
-            }
-        }
-
-        return Vector2.zero;
-    }
-
-    private static List<Vector2> aStarSearch(Vector2 start, Vector2 end) {
-        List<Vector2> closedSet = new List<Vector2>();
-        List<Vector2> openSet = new List<Vector2>();
-        openSet.Add(start);
-
-        Dictionary<Vector2, Vector2> cameFrom = new Dictionary<Vector2, Vector2>();
-
-        Dictionary<Vector2, Double> gScore = new Dictionary<Vector2, Double>();
-        gScore.Add(start, 0);
-        Dictionary<Vector2, Double> fScore = new Dictionary<Vector2, Double>();
-
-        fScore.Add(start, heuristicDistance(start, end));
-
-        while (openSet.Count > 0) {
-            Vector2 current = lowestFvalue(fScore, openSet);
-
-            if (isGoal(current, end)) {
-                return reconstructPath(cameFrom, current);
-            }
-
-            openSet.Remove(current);
-            closedSet.Add(current);
-            List<Vector2> children = getChildren(current);
-
-            foreach (Vector2 child in children) {
-                if (!closedSet.Contains(child)) {
-                    double score = getScore(gScore, current) + heuristicDistance(current, child);
-
-                    if (!openSet.Contains(child)) 
-                        openSet.Add(child);
-                    else if (score > getScore(gScore, child))
-                        continue;
-
-                    cameFrom.Remove(child);
-                    cameFrom.Add(child, current);
-                    gScore.Remove(child);
-                    gScore.Add(child, score);
-                    fScore.Remove(child);
-                    fScore.Add(child, score + heuristicDistance(child, end));
+                Point moveToPoint = new Point();
+                Point node = grid[target];
+                while (node.previous != null)
+                {
+                    moveToPoint = node;
+                    node = node.previous;
                 }
+
+                float dX = moveToPoint.position.x > currentObject.transform.position.x ? +1 : -1;
+                float dY = moveToPoint.position.y > currentObject.transform.position.y ? +1 : -1;
+                currentObject.Move(dX, dY);
             }
-
         }
-
-        return new List<Vector2>();
     }
 
-    private static double getScore(Dictionary<Vector2, Double> map, Vector2 point) {
-        if (map.ContainsKey(point))
-            return map[point];
-        return Double.MaxValue;
+    private static float distance(Vector2 start, Vector2 end) {
+        return Mathf.Abs(start.x - end.x) + Mathf.Abs(start.y - end.y);
     }
 
-    private static List<Vector2> getChildren(Vector2 point) {
-        float minDistance = 0.5f;
+    private static bool search(Point point, Dictionary<Vector2, Point> grid, Vector2 target) {
+        point.state =Point.NodeState.Closed;
+        List<Point> nextNodes = getWalkAdjacent(point, grid);
+        nextNodes.Sort((node1, node2) => node1.getFscore().CompareTo(node2.getFscore()));
+        foreach (Point curPoint in nextNodes) {
+            if (curPoint.position.Equals(target))
+                return true;
 
-        float sphereSize = 2f;
-
-        List<Vector2> children = new List<Vector2>();
-
-        Vector3 newPoint = new Vector3(point.x - minDistance, point.y, 0f);
-        if (!Physics.CheckSphere(newPoint, sphereSize))
-            children.Add(newPoint);
-
-        newPoint = new Vector3(point.x + minDistance, point.y, 0f);
-        if (!Physics.CheckSphere(newPoint, sphereSize))
-            children.Add(newPoint);
-
-        newPoint = new Vector3(point.x, point.y - minDistance, 0f);
-        if (!Physics.CheckSphere(newPoint, sphereSize))
-            children.Add(newPoint);
-
-        newPoint = new Vector3(point.x, point.y + minDistance, 0f);
-        if (!Physics.CheckSphere(newPoint, sphereSize))
-            children.Add(newPoint);
-
-        newPoint = new Vector3(point.x - minDistance, point.y - minDistance, 0f);
-        if (!Physics.CheckSphere(newPoint, sphereSize))
-            children.Add(newPoint);
-
-        newPoint = new Vector3(point.x - minDistance, point.y + minDistance, 0f);
-        if (!Physics.CheckSphere(newPoint, sphereSize))
-            children.Add(newPoint);
-
-        newPoint = new Vector3(point.x + minDistance, point.y - minDistance, 0f);
-        if (!Physics.CheckSphere(newPoint, sphereSize))
-            children.Add(newPoint);
-
-        newPoint = new Vector3(point.x + minDistance, point.y + minDistance, 0f);
-        if (!Physics.CheckSphere(newPoint, sphereSize))
-            children.Add(newPoint);
-
-        return children;
+            if (search(curPoint, grid, target))
+                return true;
+        }
+        return false;
     }
 
-    private static double heuristicDistance(Vector2 start, Vector2 end) {
-        double dist = 0;
+    private static List<Point> getWalkAdjacent(Point point, Dictionary<Vector2, Point> grid) {
+        List<Point> walkablePoints = new List<Point>();
+        List<Point> adjacentPoints = getAllAdjacent(point, grid);
 
-        dist += Mathf.Abs(start.x - end.x);
-        dist += Mathf.Abs(start.y - end.y);
+        int maxWidth = GameManager.Instance._boardScript.BoardWidth;
+        int maxHeight = GameManager.Instance._boardScript.BoardHeight;
+        foreach (Point curPoint in adjacentPoints) {
+            float x = curPoint.position.x;
+            float y = curPoint.position.y;
 
-        return dist;
-    }
+            if (x < 0 || x > maxWidth || y < 0 || y > maxHeight)
+                continue;
 
-    private static Vector2 lowestFvalue(Dictionary<Vector2, Double> fValue, List<Vector2> openSet ) {
-        Vector2 minPoint = Vector2.zero;
-        double minScore = Double.MaxValue;
+            if (!curPoint.isWalkable)
+                continue;
 
-        foreach (Vector2 key in openSet) {
-            double tempScore = fValue[key];
-
-            if (tempScore < minScore)
-            {
-                minPoint = key;
-                minScore = tempScore;
+            if (curPoint.state == Point.NodeState.Closed)
+                continue;
+            
+            if (curPoint.state == Point.NodeState.Open) {
+                float traverseCost = distance(curPoint.position, curPoint.previous.position);
+                float gTemp = point.gScore + traverseCost;
+                if (gTemp < curPoint.gScore) {
+                    curPoint.previous = point;
+                    walkablePoints.Add(curPoint);
+                }
+            } else {
+                curPoint.previous = point;
+                curPoint.state = Point.NodeState.Open;
+                walkablePoints.Add(curPoint);
             }
         }
 
-        return minPoint;
+        return walkablePoints;
     }
 
-    private static bool isGoal(Vector2 current, Vector2 end) {
-        int minDistance = 1;
+    private static List<Point> getAllAdjacent(Point point, Dictionary<Vector2, Point> grid) {
+        List<Point> points = new List<Point>();
+        float x = point.position.x;
+        float y = point.position.y;
 
-        return (Mathf.Abs(current.x - end.x) < minDistance
-                && Mathf.Abs(current.y - end.y) < minDistance);
-    }
+        Vector2 temp = new Vector2(x + 1, y);
+        if (grid.ContainsKey(temp))
+            points.Add(grid[temp]);
 
-    private static List<Vector2> reconstructPath(Dictionary<Vector2, Vector2> cameFrom, Vector2 start) {
-        Vector2 current = start;
-        List<Vector2> movement = new List<Vector2>();
+        temp = new Vector2(x - 1, y);
+        if (grid.ContainsKey(temp))
+            points.Add(grid[temp]);
 
-        while (cameFrom.ContainsKey(current)) {
-            movement.Add(current);
-            current = cameFrom[current];
-        }
+        temp = new Vector2(x, y + 1);
+        if (grid.ContainsKey(temp))
+            points.Add(grid[temp]);
 
-        return movement;
+        temp = new Vector2(x, y - 1);
+        if (grid.ContainsKey(temp))
+            points.Add(grid[temp]);
+
+        temp = new Vector2(x + 1, y + 1);
+        if (grid.ContainsKey(temp))
+            points.Add(grid[temp]);
+
+        temp = new Vector2(x + 1, y - 1);
+        if (grid.ContainsKey(temp))
+            points.Add(grid[temp]);
+
+        temp = new Vector2(x - 1, y + 1);
+        if (grid.ContainsKey(temp))
+            points.Add(grid[temp]);
+
+        temp = new Vector2(x - 1, y - 1);
+        if (grid.ContainsKey(temp))
+            points.Add(grid[temp]);
+
+        return points;
     }
 }

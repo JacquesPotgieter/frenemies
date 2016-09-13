@@ -13,8 +13,6 @@ public abstract class MovingObject : MonoBehaviour {
     private float _inverseMoveTime;
     private bool _canShoot = true;
 
-    [HideInInspector] public List<Vector2> movement;
-
 	protected virtual void Start () {
         _boxcollider = GetComponent<BoxCollider2D>();
         _rb2D = GetComponent<Rigidbody2D>();

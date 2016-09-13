@@ -21,7 +21,6 @@ public class BoardManager : MonoBehaviour {
 
     public int BoardWidth = 30;
     public int BoardHeight = 16;
-    private List<Vector3> _pathPositions = new List<Vector3>();
 
     public static Count WallCount = new Count(10, 30);
     public GameObject Exit;
@@ -32,62 +31,14 @@ public class BoardManager : MonoBehaviour {
     public GameObject[] OuterWallTiles;
 
     private Transform _boardHolder;
-    private List<Vector3> _gridPositions = new List<Vector3>();
+    [HideInInspector] public Dictionary<Vector2, Boolean> _gridPositions = new Dictionary<Vector2, bool>();
 
     void InitialiseList() {
         _gridPositions.Clear();
 
         for (int x = 1; x < BoardWidth; x++) {
             for (int y = 1; y < BoardHeight; y++) {
-                _gridPositions.Add(new Vector3(x, y, 0f));
-            }
-        }
-    }
-
-    void RandomPathAtoB() {
-        Boolean foundpath = false;
-        float curX = 0f;
-        float curY = 0f;
-        float prevcurX = 0f;
-        float prevcurY = 0f;
-        int prevChoice = Random.Range(1, 5);
-        Vector3 current = new Vector3(curX, curY, 0f);
-        _pathPositions.Add(current);
-        while (foundpath == false) {
-            int choice = Random.Range(1, 5);
-            if (choice == prevChoice)
-                choice = Random.Range(1, 5);
-            else {
-                if (choice == 1) {
-                    //Go up
-                    prevcurY = curY;
-                    curY++;
-                } else if (choice == 2) {
-                    //Go down
-                    prevcurY = curY;
-                    curY--;
-                } else if (choice == 3) {
-                    //Go left
-                    prevcurX = curX;
-                    curX--;
-                } else {
-                    //Go right
-                    prevcurX = curX;
-                    curX++;
-                }
-
-                if (curX < 0 || curX > (BoardWidth - 1) || curY < 0 || curY > (BoardHeight - 1)) {
-                    curX = prevcurX;
-                    curY = prevcurY;
-                } else {
-                    current = new Vector3(curX, curY, 0f);
-                    _pathPositions.Add(current);
-                    if (curX == BoardWidth - 1 && curY == BoardHeight - 1) {
-                        foundpath = true;
-                        _pathPositions.Remove(current);
-                    }
-
-                }
+                _gridPositions.Add(new Vector2(x, y), true);
             }
         }
     }
@@ -102,40 +53,32 @@ public class BoardManager : MonoBehaviour {
                 if (x == -1 || x == BoardWidth || y == -1 || y == BoardHeight)
                     toInstantiate = OuterWallTiles[Random.Range(0, OuterWallTiles.Length)];
 
-                GameObject instance = Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+                GameObject instance = Instantiate(toInstantiate, new Vector3(x - 0.5f, y - 0.5f, 0f), Quaternion.identity) as GameObject;
                 instance.transform.SetParent(_boardHolder);
             }
         }
     }
-
-
+    
     //RandomPosition returns a random position from our list gridPositions.
-    Vector3 RandomPosition() {
-        int randomIndex = Random.Range(0, _gridPositions.Count);
-        Vector3 randomPosition = _gridPositions[randomIndex];
-        _gridPositions.RemoveAt(randomIndex);
-        return randomPosition;
+    Vector3 RandomPosition(bool stationary) {
+        int randomX = Random.Range(1, BoardWidth + 1);
+        int randomY = Random.Range(1, BoardHeight + 1);
+        Vector2 position = new Vector2(randomX - 0.5f, randomY - 0.5f);
+        if (stationary) {
+            _gridPositions.Remove(position);
+            _gridPositions.Add(position, false);
+        }
+        return position;
     }
 
-    void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum, Transform boardHolder) {
+    void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum, Transform boardHolder, bool stationary) {
         int objectCount = Random.Range(minimum, maximum + 1);
 
         for (int i = 0; i < objectCount; i++) {
-            Vector3 randomPosition = RandomPosition();
+            Vector3 randomPosition = RandomPosition(stationary);
             GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
             GameObject instance = Instantiate(tileChoice, randomPosition, Quaternion.identity) as GameObject;
             instance.transform.SetParent(boardHolder);
-        }
-    }
-
-    void Layoutpath() {
-        foreach (Vector3 vec in _pathPositions) {
-            //Choose a random tile from tileArray and assign it to tileChoice
-            GameObject tileChoice = Exit;
-
-            //Instantiate tileChoice at the position returned by RandomPosition with no change in rotation
-            GameObject instance = Instantiate(tileChoice, vec, Quaternion.identity) as GameObject;
-            instance.transform.SetParent(_boardHolder);
         }
     }
 
@@ -145,18 +88,17 @@ public class BoardManager : MonoBehaviour {
 
         InitialiseList();
 
-        Layoutpath();
         // Uncomment bellow to see procerurally generated map that is done in tutorial
 
         ////Instantiate a random number of wall tiles based on minimum and maximum, at randomized positions.
-        LayoutObjectAtRandom(WallTiles, WallCount.Minimum, WallCount.Maximum, _boardHolder);
+        LayoutObjectAtRandom(WallTiles, WallCount.Minimum, WallCount.Maximum, _boardHolder, true);
 
         ////Determine number of enemies based on current level number, based on a logarithmic progression
         int enemyCount = (int)Mathf.Log(level, 2f);
 
         ////Instantiate a random number of enemies based on minimum and maximum, at randomized positions.
         Transform enemyHolder = new GameObject("Enemies").transform;
-        LayoutObjectAtRandom(EnemyTiles, enemyCount, enemyCount, enemyHolder);
+        LayoutObjectAtRandom(EnemyTiles, enemyCount, enemyCount, enemyHolder, false);
 
         //Instantiate the exit tile in the upper right hand corner of our game board
         GameObject instance = Instantiate(Exit, new Vector3(BoardWidth - 1, BoardHeight - 1, 0f), Quaternion.identity) as GameObject;
