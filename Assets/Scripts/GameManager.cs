@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour {
 
         _levelImage = GameObject.Find("LevelImage");
         _levelText = GameObject.Find("LevelText").GetComponent<Text>();
-        _levelText.text = "Day " + _level;
+        _levelText.text = "Enemies: " + _level;
         _levelImage.SetActive(true);
 
         Invoke("HideLevelImage", LevelStartDelay);
@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour {
     void HideLevelImage() {
         _levelImage.SetActive(false);
         _doingSetup = false;
+        enabled = true;
     }
 
     void Update() {
@@ -83,15 +84,32 @@ public class GameManager : MonoBehaviour {
         enabled = false;
     }
 
+    public void AllEnemiesKilled() {
+        Invoke("Restart", LevelStartDelay);
+
+        foreach (Player cur in players)
+            cur.enabled = false;
+
+        enabled = false;
+    }
+
+    private void Restart() {
+        Application.LoadLevel(Application.loadedLevel);
+    }
+
     IEnumerator MoveEnemies() {
         yield return new WaitForSeconds(TurnDelay);
 
-        if (enemies.Count == 0) 
-            yield return new WaitForSeconds(TurnDelay);        
+        if (enemies.Count == 0 && enabled) {
+            AllEnemiesKilled();
+            yield break;
+        }
 
         for (int i = 0; i < enemies.Count; i++) {
-            enemies[i].UpdateEnemy();
-            yield return new WaitForSeconds(enemies[i].MoveTime);
+            if (i < enemies.Count) {
+                if (enemies[i] != null)
+                    enemies[i].UpdateEnemy();
+            }
         }
     }
 }

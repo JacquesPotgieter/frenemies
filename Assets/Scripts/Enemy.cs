@@ -9,7 +9,6 @@ public class Enemy : MovingObject {
     private int _healthPoints;
     private Animator _animator;
     private bool isDead = false;
-    private int frozenHits = 1;
 
     public void init(AI_Controller AI_controller, int health, int damage, RuntimeAnimatorController animator) {
         this.AI_controller = AI_controller;
@@ -50,7 +49,7 @@ public class Enemy : MovingObject {
         if (_healthPoints <= 0) {
             _animator.SetTrigger("Dead");
             isDead = true;
-
+            GameManager.Instance.enemies.Remove(this);
             Destroy(gameObject);
         }
     }
@@ -70,15 +69,5 @@ public class Enemy : MovingObject {
     private void MainBulletHit(Collision2D collision) {
         Bullet bullet = collision.gameObject.GetComponent<Bullet>();
         this._healthPoints -= bullet.DamageDone;
-    }
-
-    private IEnumerator AltBulletHit(Collision2D collision) {
-        if (this.frozenHits < HitsBeforeFrozen) {
-            this.frozenHits++;
-            _inverseMoveTime = 1 / (MoveTime * frozenHits * 2);
-            yield return new WaitForSeconds(TimeFrozenPerStep);
-            this.frozenHits--;
-            _inverseMoveTime = 1 / (MoveTime * frozenHits * 2);
-        }
     }
 }

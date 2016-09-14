@@ -24,7 +24,7 @@ public class AssignEnemy : MonoBehaviour {
     }
 
     private static int getHealthPoints() {
-        return 100;
+        return 20;
     }
 
     private static int getDamageDealt() {

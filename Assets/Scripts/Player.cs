@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class Player : MovingObject {
     public string PlayerNumber = "1";
-    public float RestartLevelDelay = 1f;
     public Text HealthText;
     public AudioClip MoveSound1;
     public AudioClip MoveSound2;
@@ -34,17 +33,20 @@ public class Player : MovingObject {
         else
             _healthPoints = GameManager.Instance.HealthP2;
 
-        HealthText.text = "Food: " + _healthPoints;
-
         base.Start();
     }
 
     private void OnDisable() {
-        GameManager.Instance.HealthP1 = _healthPoints;
+        if (PlayerNumber.Equals("1"))
+            GameManager.Instance.HealthP1 = _healthPoints;
+        else
+            GameManager.Instance.HealthP2 = _healthPoints;
     }
 
     void Update() {
         if (!isDead) {
+            CheckIfGameOver();
+
             float horizontal = Input.GetAxis(HorizontalCtrl);
             float vertical = Input.GetAxis(VerticalCtrl);
             float didShootMain = Input.GetAxis(ShootMainButton);
@@ -63,9 +65,7 @@ public class Player : MovingObject {
             if (didShootMain > double.Epsilon)
                 TryShoot(horizontalFire, verticalFire, true, DamageDealt);
             else if (didShootAlt > double.Epsilon)
-                TryShoot(horizontalFire, verticalFire, false, DamageDealt);
-
-            CheckIfGameOver();
+                TryShoot(horizontalFire, verticalFire, false, DamageDealt);            
         }
     }
 
@@ -87,13 +87,9 @@ public class Player : MovingObject {
 
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.tag == "Exit") {
-            Invoke("Restart", RestartLevelDelay);
-            enabled = false;
+            //Invoke("Restart", RestartLevelDelay);
+            //enabled = false;
         }
-    }
-
-    private void Restart() {
-        Application.LoadLevel(Application.loadedLevel);
     }
 
     private void CheckIfGameOver() {

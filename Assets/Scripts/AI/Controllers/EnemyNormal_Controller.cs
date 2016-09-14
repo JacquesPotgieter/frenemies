@@ -10,7 +10,7 @@ public class EnemyNormalController : AI_Controller {
         changeTarget();
         moveToTarget();
 
-        //shootTarget(true);
+        shootTarget(true);
     }
 
     private void moveToTarget() {

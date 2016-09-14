@@ -11,6 +11,7 @@ public abstract class MovingObject : MonoBehaviour {
     public LayerMask BlockingLayer;
     public int DamageDealt = 5;
 
+    private int frozenHits = 1;
     private BoxCollider2D _boxcollider;
     private Rigidbody2D _rb2D;
     protected float _inverseMoveTime;
@@ -80,6 +81,16 @@ public abstract class MovingObject : MonoBehaviour {
     protected void SmoothMovement(Vector3 end) {
         Vector3 newPosition = Vector3.MoveTowards(_rb2D.position, end, _inverseMoveTime * Time.deltaTime);
         _rb2D.MovePosition(newPosition);
+    }
+
+    protected IEnumerator AltBulletHit(Collision2D collision) {
+        if (this.frozenHits < HitsBeforeFrozen) {
+            this.frozenHits++;
+            _inverseMoveTime = 1 / (MoveTime * frozenHits * 4);
+            yield return new WaitForSeconds(TimeFrozenPerStep);
+            this.frozenHits--;
+            _inverseMoveTime = 1 / (MoveTime * frozenHits * 4);
+        }
     }
 
     protected abstract void OnCollisionEnter2D(Collision2D collision);
