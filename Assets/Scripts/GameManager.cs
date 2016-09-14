@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public BoardManager _boardScript;
 
     private Text _levelText;									
-    private GameObject _levelImage;                      
+    private GameObject _levelImage;
     private int _level = 1;                                                                                      
     private bool _doingSetup;                                
     

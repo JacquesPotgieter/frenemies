@@ -25,11 +25,16 @@ public class Player : MovingObject {
     private int _healthPoints;
     private bool isDead = false;
 
+    public int getHealth()
+    {
+        return _healthPoints;
+    }
+
     protected override void Start() {
         GameManager.Instance.players.Add(this);
         _animator = GetComponent<Animator>();
         if (PlayerNumber.Equals("1"))
-            _healthPoints = GameManager.Instance.HealthP1;
+            _healthPoints = GameManager.Instance.HealthP1 -10;
         else
             _healthPoints = GameManager.Instance.HealthP2;
 

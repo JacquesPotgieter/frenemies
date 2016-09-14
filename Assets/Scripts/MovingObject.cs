@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public abstract class MovingObject : MonoBehaviour {
-    public float TimeBetweenShotsMain = 0.4f;
+    public float TimeBetweenShotsMain = 0f;
     public float TimeBetweenShotsAlt = 0.4f;
     public float TimeFrozenPerStep = 0.8f;
     public float HitsBeforeFrozen = 5;
