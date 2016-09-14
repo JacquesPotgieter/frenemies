@@ -23,9 +23,9 @@ public class Bullet : MovingObject {
 
     private void changeColour() {
         if (_mainFire)
-            gameObject.GetComponent<SpriteRenderer>().material.color = Color.red;
+            gameObject.GetComponent<SpriteRenderer>().material.color = Color.green;
         else
-            gameObject.GetComponent<SpriteRenderer>().material.color = Color.black;
+            gameObject.GetComponent<SpriteRenderer>().material.color = Color.blue;
 
         if (_shooter.tag.Equals("Enemy")) {
             if (_mainFire)
@@ -36,7 +36,7 @@ public class Bullet : MovingObject {
     }
 
 	void Start () {
-        base.MoveTime = 0.05f;
+        base.MoveTime = 0.1f;
         base.Start();
 	}
 

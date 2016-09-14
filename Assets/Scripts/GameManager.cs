@@ -6,7 +6,8 @@ using UnityEngine.UI;					//Allows us to use UI.
 public class GameManager : MonoBehaviour {
 
     public float LevelStartDelay = 2f;						
-    public float TurnDelay = 0.1f;                          
+    public float TurnDelay = 0.1f;
+    public Text infoText;               
     [HideInInspector] public int HealthP1 = 100;
     [HideInInspector] public int HealthP2 = 100;              
     public static GameManager Instance = null;  
@@ -14,6 +15,7 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public List<Player> players;
     [HideInInspector] public List<Enemy> enemies;
     [HideInInspector] public BoardManager _boardScript;
+    [HideInInspector] public bool Godmode = false;
 
     private Text _levelText;									
     private GameObject _levelImage;                      
@@ -46,6 +48,9 @@ public class GameManager : MonoBehaviour {
         _levelText.text = "Enemies: " + _level;
         _levelImage.SetActive(true);
 
+        infoText = GameObject.Find("GameInfo").GetComponent<Text>();
+        infoText.text = "";
+
         Invoke("HideLevelImage", LevelStartDelay);
         enemies.Clear();
         this.players.Clear();
@@ -61,6 +66,17 @@ public class GameManager : MonoBehaviour {
             this.players.Add(players[i]);
     }
 
+    void onEscape() {
+        Godmode = !Godmode;
+        if (Godmode)
+            infoText.text = "Godmode";
+        else
+            infoText.text = "";
+
+        foreach (Player cur in players) 
+            cur.godmode = Godmode;
+    }
+
     void HideLevelImage() {
         _levelImage.SetActive(false);
         _doingSetup = false;
@@ -72,6 +88,10 @@ public class GameManager : MonoBehaviour {
             return;
 
         StartCoroutine(MoveEnemies());
+
+        if (Input.GetKeyUp(KeyCode.Escape)) {
+            onEscape();
+        }
     }
 
     public void AddEnemyToList(Enemy script) {

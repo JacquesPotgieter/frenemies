@@ -21,6 +21,7 @@ public class Player : MovingObject {
     public string ShootMainButton = "Fire1_P1";
     public string ShootAltButton = "Fire2_P1";
 
+    [HideInInspector] public bool godmode = false;
     private Animator _animator;
     private int _healthPoints;
     private bool isDead = false;
@@ -109,22 +110,25 @@ public class Player : MovingObject {
         if (collision.collider.tag == "Bullet") {
             Bullet bullet = collision.gameObject.GetComponent<Bullet>();
 
-            if (bullet._shooter == this) {
-                Debug.Log("Hit self");
-            } else {
-                bool isPlayershot = bullet._shooter.tag == "Player";
-                if (bullet._mainFire && isPlayershot)
-                    MainBulletPlayer(bullet);
+            if (!godmode) {
+                if (bullet._shooter == this) {
+                    Debug.Log("Hit self");
+                }
+                else {
+                    bool isPlayershot = bullet._shooter.tag == "Player";
+                    if (bullet._mainFire && isPlayershot)
+                        MainBulletPlayer(bullet);
 
-                if (bullet._mainFire && !isPlayershot)
-                    MainBulletHit(bullet);
+                    if (bullet._mainFire && !isPlayershot)
+                        MainBulletHit(bullet);
 
-                if (!bullet._mainFire && isPlayershot)
-                    AltBulletPlayer(bullet);
+                    if (!bullet._mainFire && isPlayershot)
+                        AltBulletPlayer(bullet);
 
-                if (!bullet._mainFire && !isPlayershot)
-                    AltBulletHit(bullet);
-            }            
+                    if (!bullet._mainFire && !isPlayershot)
+                        AltBulletHit(bullet);
+                }
+            }
         }
     }
 
