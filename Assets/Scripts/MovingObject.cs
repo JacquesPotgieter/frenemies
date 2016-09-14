@@ -71,10 +71,12 @@ public abstract class MovingObject : MonoBehaviour {
         clone.Init(direction, this, mainFire, bulletDamage);
 
         _canShoot = false;
+
+        float frozenTime = 3 * ((frozenHits - 1)/ HitsBeforeFrozen);
         if (mainFire)
-            yield return new WaitForSeconds(TimeBetweenShotsMain);
+            yield return new WaitForSeconds(TimeBetweenShotsMain + frozenTime);
         else
-            yield return new WaitForSeconds(TimeBetweenShotsAlt);
+            yield return new WaitForSeconds(TimeBetweenShotsAlt + frozenTime);
         _canShoot = true;
     }
 
@@ -91,6 +93,9 @@ public abstract class MovingObject : MonoBehaviour {
             this.frozenHits--;
             _inverseMoveTime = 1 / (MoveTime * frozenHits * 4);
         }
+
+        if (frozenHits == 1)
+            _inverseMoveTime = 1/MoveTime;
     }
 
     protected abstract void OnCollisionEnter2D(Collision2D collision);

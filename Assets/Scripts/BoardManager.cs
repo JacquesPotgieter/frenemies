@@ -99,9 +99,5 @@ public class BoardManager : MonoBehaviour {
         ////Instantiate a random number of enemies based on minimum and maximum, at randomized positions.
         Transform enemyHolder = new GameObject("Enemies").transform;
         LayoutObjectAtRandom(EnemyTiles, enemyCount, enemyCount, enemyHolder, false);
-
-        //Instantiate the exit tile in the upper right hand corner of our game board
-        GameObject instance = Instantiate(Exit, new Vector3(BoardWidth - 1, BoardHeight - 1, 0f), Quaternion.identity) as GameObject;
-        instance.transform.SetParent(_boardHolder);
     }
 }
