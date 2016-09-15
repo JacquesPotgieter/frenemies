@@ -6,10 +6,10 @@ public class FindClosestHidingSpot : MonoBehaviour {
 
     private class Point {
         public float distance;
-        public Vector2 position;
+        public Vector3 position;
     }
 
-    public static Vector2 run(MovingObject currentObject, Vector2 target) {
+    public static Vector2 run(MovingObject currentObject, MovingObject target, Vector2 previousHidingSpot) {
         Dictionary<Vector2, Point> obstacles = new Dictionary<Vector2, Point>();
 
         Dictionary<Vector2, bool> grid = GameManager.Instance._boardScript._gridPositions;
@@ -17,7 +17,7 @@ public class FindClosestHidingSpot : MonoBehaviour {
         best.distance = float.MaxValue;
 
         foreach (Vector2 curPosition in grid.Keys) {
-            if (grid[curPosition]) {
+            if (!grid[curPosition]) {
                 Point point = new Point();
                 point.distance = Vector2.Distance(currentObject.transform.position, curPosition);
                 point.position = curPosition;
@@ -30,30 +30,26 @@ public class FindClosestHidingSpot : MonoBehaviour {
 
         List<Point> adjacent = getAllAdjacent(best, grid);
 
-        Vector2 hidingSpot = currentObject.transform.position;
+        Vector2 hidingSpot = previousHidingSpot;
+
         float distance = float.MaxValue;
 
         foreach (Point cur in adjacent) {
-            Vector2 direction = cur.position - target;
+            Vector3 direction = target.transform.position - cur.position;
             direction.Normalize();
-            Vector3 startingPosition = currentObject.transform.position;
-//            if (yDir < -0.5)
-//                startingPosition.y -= (currentObject._boxcollider.size.y + 0.5f);
-//
-//            if (yDir > 0.5)
-//                startingPosition.y += (_boxcollider.size.y + 0.1f);
-//
-//            if (xDir > 0.5)
-//                startingPosition.x += (_boxcollider.size.x + 0.2f);
-//            if (xDir < -0.5)
-//                startingPosition.x -= (_boxcollider.size.x + 0.2f);
-            float dist = Vector2.Distance(cur.position, currentObject.transform.position);
-            RaycastHit2D hit = Physics2D.Raycast(target, direction, 0.1f);
+            float dist = Vector2.Distance(cur.position, target.transform.position);
+            BoxCollider2D col = target.GetComponent<BoxCollider2D>();
+            BoxCollider2D colObj = currentObject.GetComponent<BoxCollider2D>();
+            col.enabled = false;
+            colObj.enabled = false;
+            RaycastHit2D hit = Physics2D.Raycast(target.transform.position, direction, dist);
+            col.enabled = true;
+            colObj.enabled = true;
             if (hit.collider != null) {
-                if (dist < distance) {
+                //if (dist < distance) {
                     distance = dist;
                     hidingSpot = cur.position;
-                }
+                //}
             }
         }
 
@@ -68,49 +64,49 @@ public class FindClosestHidingSpot : MonoBehaviour {
         Vector2 temp = new Vector2(x + 1, y);
         Point tempPoint = new Point();
         tempPoint.position = temp;
-        if (grid.ContainsKey(temp))
+        if (grid.ContainsKey(temp) && grid[temp])
             points.Add(tempPoint);
 
         temp = new Vector2(x - 1, y);
         tempPoint = new Point();
         tempPoint.position = temp;
-        if (grid.ContainsKey(temp))
+        if (grid.ContainsKey(temp) && grid[temp])
             points.Add(tempPoint);
 
         temp = new Vector2(x, y + 1);
         tempPoint = new Point();
         tempPoint.position = temp;
-        if (grid.ContainsKey(temp))
+        if (grid.ContainsKey(temp) && grid[temp])
             points.Add(tempPoint);
 
         temp = new Vector2(x, y - 1);
         tempPoint = new Point();
         tempPoint.position = temp;
-        if (grid.ContainsKey(temp))
+        if (grid.ContainsKey(temp) && grid[temp])
             points.Add(tempPoint);
 
         temp = new Vector2(x + 1, y + 1);
         tempPoint = new Point();
         tempPoint.position = temp;
-        if (grid.ContainsKey(temp))
+        if (grid.ContainsKey(temp) && grid[temp])
             points.Add(tempPoint);
 
         temp = new Vector2(x + 1, y - 1);
         tempPoint = new Point();
         tempPoint.position = temp;
-        if (grid.ContainsKey(temp))
+        if (grid.ContainsKey(temp) && grid[temp])
             points.Add(tempPoint);
 
         temp = new Vector2(x - 1, y + 1);
         tempPoint = new Point();
         tempPoint.position = temp;
-        if (grid.ContainsKey(temp))
+        if (grid.ContainsKey(temp) && grid[temp])
             points.Add(tempPoint);
 
         temp = new Vector2(x - 1, y - 1);
         tempPoint = new Point();
         tempPoint.position = temp;
-        if (grid.ContainsKey(temp))
+        if (grid.ContainsKey(temp) && grid[temp])
             points.Add(tempPoint);
 
         return points;

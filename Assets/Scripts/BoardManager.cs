@@ -63,12 +63,12 @@ public class BoardManager : MonoBehaviour {
     Vector3 RandomPosition(bool stationary) {
         int randomX = Random.Range(1, BoardWidth + 1);
         int randomY = Random.Range(1, BoardHeight + 1);
-        Vector2 position = new Vector2(randomX - 0.5f, randomY - 0.5f);
+        Vector2 position = new Vector2(randomX, randomY);
         if (stationary) {
             _gridPositions.Remove(position);
             _gridPositions.Add(position, false);
         }
-        return position;
+        return position - new Vector2(0.5f, 0.5f);
     }
 
     void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum, Transform boardHolder, bool stationary) {
