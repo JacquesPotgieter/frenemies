@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour {
 
     private Text _levelText;									
     private GameObject _levelImage;
-    private int _level = 1;                                                                                      
+    private int _level = 2;                                                                                      
     private bool _doingSetup;                                
     
     void Awake() {
@@ -61,20 +61,12 @@ public class GameManager : MonoBehaviour {
         camera.transform.position = new Vector3(_boardScript.BoardWidth / 2f, _boardScript.BoardHeight / 2f, -10f);
         Camera.main.orthographicSize = _boardScript.BoardHeight / 2 + 2;
 
-        Player[] players = GetComponents<Player>();
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < players.Length; i++)
-            this.players.Add(players[i]);
-    }
-
-    void onEscape() {
-        Godmode = !Godmode;
-        if (Godmode)
-            infoText.text = "Godmode";
-        else
-            infoText.text = "";
-
-        foreach (Player cur in players) 
-            cur.godmode = Godmode;
+            this.players.Add(players[i].GetComponent<Player>());
+        BoardManager boardman = GetComponent<BoardManager>();
+        this.players[1].transform.position = new Vector3(0f, boardman.BoardHeight - 1f, 1f);
+        this.players[0].transform.position = new Vector3(boardman.BoardWidth - 1f, boardman.BoardHeight - 1f, 1f);
     }
 
     void HideLevelImage() {
@@ -90,8 +82,13 @@ public class GameManager : MonoBehaviour {
         StartCoroutine(MoveEnemies());
 
         if (Input.GetKeyUp(KeyCode.Escape)) {
-            onEscape();
+            Godmode = !Godmode;
         }
+
+        if (Godmode)
+            infoText.text = "Godmode";
+        else
+            infoText.text = "";
     }
 
     public void AddEnemyToList(Enemy script) {
@@ -99,9 +96,19 @@ public class GameManager : MonoBehaviour {
     }
 
     public void GameOver() {
-        _levelText.text = "After " + _level + " days, you starved.";
+        if (HealthP1 < 0)
+            _levelText.text = _level + " Enemies overwelmed Player 1";
+        else
+            _levelText.text = _level + " Enemies overwelmed Player 2";
         _levelImage.SetActive(true);
         enabled = false;
+    }
+
+    public void checkIfAllEnemiesKilled(Enemy enemy) {
+        if (enemies.Count == 1 && enabled) {
+            enemy.lastShooter.killedLastEnemy();
+            AllEnemiesKilled();
+        }
     }
 
     public void AllEnemiesKilled() {

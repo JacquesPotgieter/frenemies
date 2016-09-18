@@ -21,7 +21,6 @@ public class Player : MovingObject {
     public string ShootMainButton = "Fire1_P1";
     public string ShootAltButton = "Fire2_P1";
 
-    [HideInInspector] public bool godmode = false;
     private Animator _animator;
     private int _healthPoints;
     private bool isDead = false;
@@ -32,10 +31,9 @@ public class Player : MovingObject {
     }
 
     protected override void Start() {
-        GameManager.Instance.players.Add(this);
         _animator = GetComponent<Animator>();
         if (PlayerNumber.Equals("1"))
-            _healthPoints = GameManager.Instance.HealthP1 -10;
+            _healthPoints = GameManager.Instance.HealthP1;
         else
             _healthPoints = GameManager.Instance.HealthP2;
 
@@ -69,10 +67,45 @@ public class Player : MovingObject {
                 horizontalFire = 1;
 
             if (didShootMain > double.Epsilon)
-                TryShoot(horizontalFire, verticalFire, true, DamageDealt);
+                autoAim(new Vector2(horizontalFire, verticalFire), true);
             else if (didShootAlt > double.Epsilon)
-                TryShoot(horizontalFire, verticalFire, false, DamageDealt);            
+                autoAim(new Vector2(horizontalFire, verticalFire), false);            
         }
+    }
+
+    private void autoAim(Vector2 firedDirection, bool mainFire) {
+        float dirX = firedDirection.x;
+        float dirY = firedDirection.y;
+
+        firedDirection.Normalize();
+        float bestAngle = 0.966f;
+        MovingObject closest = null;
+
+        foreach (Player enemy in GameManager.Instance.players) {
+            if (enemy != this) {
+                Vector2 vectorToEnemy = enemy.transform.position - transform.position;
+                vectorToEnemy.Normalize();
+                float angleToEnemy = Vector3.Dot(firedDirection, vectorToEnemy);
+                if (angleToEnemy > bestAngle) {
+                    bestAngle = angleToEnemy;
+                    closest = enemy;
+                }
+            }
+        }
+        foreach (Enemy enemy in GameManager.Instance.enemies) {
+            Vector2 vectorToEnemy = enemy.transform.position - transform.position;
+            vectorToEnemy.Normalize();
+            float angleToEnemy = Vector2.Dot(firedDirection, vectorToEnemy);
+            if (angleToEnemy > bestAngle) {
+                bestAngle = angleToEnemy;
+                closest = enemy;
+            }
+        }
+
+        if (closest == null)
+            TryShoot(firedDirection.x, firedDirection.y, mainFire, DamageDealt);
+        else
+            ShootPosition.run(this, closest.transform.position, mainFire);
     }
 
     public override bool Move(float xDir, float yDir) {
@@ -111,28 +144,25 @@ public class Player : MovingObject {
         }
     }
 
-    protected override void OnCollisionEnter2D(Collision2D collision) {        
+    protected override void OnCollisionEnter2D(Collision2D collision) {
         if (collision.collider.tag == "Bullet") {
             Bullet bullet = collision.gameObject.GetComponent<Bullet>();
 
-            if (!godmode) {
-                if (bullet._shooter == this) {
-                    Debug.Log("Hit self");
-                }
-                else {
-                    bool isPlayershot = bullet._shooter.tag == "Player";
-                    if (bullet._mainFire && isPlayershot)
-                        MainBulletPlayer(bullet);
+            if (bullet._shooter == this) {
+                Debug.Log("Hit self");
+            } else {
+                bool isPlayershot = bullet._shooter.tag == "Player";
+                if (bullet._mainFire && isPlayershot)
+                    MainBulletPlayer(bullet);
 
-                    if (bullet._mainFire && !isPlayershot)
-                        MainBulletHit(bullet);
+                if (bullet._mainFire && !isPlayershot)
+                    MainBulletHit(bullet);
 
-                    if (!bullet._mainFire && isPlayershot)
-                        AltBulletPlayer(bullet);
+                if (!bullet._mainFire && isPlayershot)
+                    AltBulletPlayer(bullet);
 
-                    if (!bullet._mainFire && !isPlayershot)
-                        AltBulletHit(bullet);
-                }
+                if (!bullet._mainFire && !isPlayershot)
+                    AltBulletHit(bullet);
             }
         }
     }
@@ -142,14 +172,19 @@ public class Player : MovingObject {
     }
 
     private void MainBulletHit(Bullet bullet) {      
-        this._healthPoints -= bullet.DamageDone;        
+        if (!GameManager.Instance.Godmode)
+            this._healthPoints -= bullet.DamageDone;        
     }
 
     private void AltBulletPlayer(Bullet bullet) {
-
+        StartCoroutine(base.AltBulletHit(null));
     }
 
     private void AltBulletHit(Bullet bullet) {
+        StartCoroutine(base.AltBulletHit(null));
+    }
 
+    public void killedLastEnemy() {
+        this._healthPoints += 30;
     }
 }

@@ -41,7 +41,10 @@ public class Bullet : MovingObject {
 	}
 
     void Update() {
-        Move(_direction.x, _direction.y);
+        if (_shooter != null)
+            Move(_direction.x, _direction.y);
+        else
+            Destroy(gameObject);
     }
 
     protected override void OnCollisionEnter2D(Collision2D collision) {

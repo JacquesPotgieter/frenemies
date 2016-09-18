@@ -6,6 +6,7 @@ public class Enemy : MovingObject {
    
     public AI_Controller AI_controller;
 
+    [HideInInspector] public Player lastShooter;
     private int _healthPoints;
     private Animator _animator;
     private bool isDead = false;
@@ -47,6 +48,7 @@ public class Enemy : MovingObject {
 
     private void CheckIfGameOver() {
         if (_healthPoints <= 0) {
+            GameManager.Instance.checkIfAllEnemiesKilled(this);
             _animator.SetTrigger("Dead");
             isDead = true;
             GameManager.Instance.enemies.Remove(this);
@@ -57,7 +59,9 @@ public class Enemy : MovingObject {
     protected override void OnCollisionEnter2D(Collision2D collision) {
         if (collision.collider.tag == "Bullet") {
             Bullet bullet = collision.collider.GetComponent<Bullet>();
+            
             if (!bullet._shooter.tag.Equals("Enemy")) {
+                lastShooter = bullet._shooter.GetComponent<Player>();
                 if (bullet._mainFire)
                     MainBulletHit(collision);
                 else

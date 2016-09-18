@@ -45,7 +45,7 @@ public class BoardManager : MonoBehaviour {
 
     void BoardSetup() {
         _boardHolder = new GameObject("Board").transform;
-        
+
         for (int x = -1; x <= BoardWidth + 1; x++) {
             for (int y = -1; y <= BoardHeight + 1; y++) {
                 GameObject toInstantiate = FloorTiles[Random.Range(0, FloorTiles.Length)];
