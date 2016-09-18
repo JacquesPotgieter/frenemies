@@ -24,6 +24,16 @@ public class MoveToPosition : MonoBehaviour {
     }
 
     public static void run(MovingObject currentObject, Vector3 target) {
+        retarded(currentObject, target);
+    }
+
+    private static void retarded(MovingObject currentObject, Vector2 target) {
+        Vector2 end = (target - (Vector2)currentObject.transform.position).normalized;
+
+        currentObject.Move(end.x, end.y);
+    }
+
+    private static void aStar(MovingObject currentObject, Vector3 target) {
         Vector2 startingPosition = currentObject.transform.position;
         target = new Vector2(Mathf.RoundToInt(target.x),
             Mathf.RoundToInt(target.y));
@@ -46,23 +56,24 @@ public class MoveToPosition : MonoBehaviour {
                 grid.Add(pos, point);
             }
         }
-        Vector2 start = new Vector2(Mathf.RoundToInt(startingPosition.x), 
+        Vector2 start = new Vector2(Mathf.RoundToInt(startingPosition.x),
             Mathf.RoundToInt(startingPosition.y));
-        if (grid.ContainsKey(start))
-        {
+        if (grid.ContainsKey(start)) {
             bool success = search(grid[start], grid, target);
-            if (success)
-            {
+
+            if (success) {
                 Point moveToPoint = new Point();
                 Point node = grid[target];
-                while (node.previous != null)
-                {
+                while (node.previous != null) {
                     moveToPoint = node;
                     node = node.previous;
                 }
 
-                float dX = moveToPoint.position.x > currentObject.transform.position.x ? +1 : -1;
-                float dY = moveToPoint.position.y > currentObject.transform.position.y ? +1 : -1;
+                moveToPoint.position -= new Vector2(0.5f, 0.5f);
+
+                float dX = moveToPoint.position.x - currentObject.transform.position.x;
+                float dY = moveToPoint.position.y - currentObject.transform.position.y;
+
                 currentObject.Move(dX, dY);
             }
         }
@@ -73,7 +84,7 @@ public class MoveToPosition : MonoBehaviour {
     }
 
     private static bool search(Point point, Dictionary<Vector2, Point> grid, Vector2 target) {
-        point.state =Point.NodeState.Closed;
+        point.state = Point.NodeState.Closed;
         List<Point> nextNodes = getWalkAdjacent(point, grid);
         nextNodes.Sort((node1, node2) => node1.getFscore().CompareTo(node2.getFscore()));
         foreach (Point curPoint in nextNodes) {

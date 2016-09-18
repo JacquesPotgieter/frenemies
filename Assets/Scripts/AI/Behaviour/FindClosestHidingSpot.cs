@@ -42,18 +42,18 @@ public class FindClosestHidingSpot : MonoBehaviour {
             BoxCollider2D colObj = currentObject.GetComponent<BoxCollider2D>();
             col.enabled = false;
             colObj.enabled = false;
-            RaycastHit2D hit = Physics2D.Raycast(target.transform.position, direction, dist);
+            RaycastHit2D hit = Physics2D.Raycast(target.transform.position, direction, dist*0.8f);
             col.enabled = true;
             colObj.enabled = true;
             if (hit.collider != null) {
-                //if (dist < distance) {
+                if (dist < distance) {
                     distance = dist;
                     hidingSpot = cur.position;
-                //}
+                }
             }
         }
 
-        return hidingSpot;
+        return hidingSpot - new Vector2(1f, 1f);
     }
 
     private static List<Point> getAllAdjacent(Point point, Dictionary<Vector2, bool> grid) {
@@ -80,30 +80,6 @@ public class FindClosestHidingSpot : MonoBehaviour {
             points.Add(tempPoint);
 
         temp = new Vector2(x, y - 1);
-        tempPoint = new Point();
-        tempPoint.position = temp;
-        if (grid.ContainsKey(temp) && grid[temp])
-            points.Add(tempPoint);
-
-        temp = new Vector2(x + 1, y + 1);
-        tempPoint = new Point();
-        tempPoint.position = temp;
-        if (grid.ContainsKey(temp) && grid[temp])
-            points.Add(tempPoint);
-
-        temp = new Vector2(x + 1, y - 1);
-        tempPoint = new Point();
-        tempPoint.position = temp;
-        if (grid.ContainsKey(temp) && grid[temp])
-            points.Add(tempPoint);
-
-        temp = new Vector2(x - 1, y + 1);
-        tempPoint = new Point();
-        tempPoint.position = temp;
-        if (grid.ContainsKey(temp) && grid[temp])
-            points.Add(tempPoint);
-
-        temp = new Vector2(x - 1, y - 1);
         tempPoint = new Point();
         tempPoint.position = temp;
         if (grid.ContainsKey(temp) && grid[temp])

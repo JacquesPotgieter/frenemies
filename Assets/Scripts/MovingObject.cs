@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public abstract class MovingObject : MonoBehaviour {
-    public float TimeBetweenShotsMain = 0f;
-    public float TimeBetweenShotsAlt = 0.4f;
+    public float TimeBetweenShotsMain = 0.6f;
+    public float TimeBetweenShotsAlt = 0.6f;
     public float TimeFrozenPerStep = 0.8f;
     public float HitsBeforeFrozen = 5;
     public float MoveTime = 0.15f;
@@ -29,7 +29,9 @@ public abstract class MovingObject : MonoBehaviour {
 
     public virtual bool Move(float xDir, float yDir) {
         Vector2 start = transform.position;
-        Vector2 end = start + new Vector2(xDir, yDir);
+        Vector2 normalized = new Vector2(xDir, yDir);
+        normalized.Normalize();
+        Vector2 end = start + normalized;
         SmoothMovement(end);
         return true;
     }
@@ -56,7 +58,7 @@ public abstract class MovingObject : MonoBehaviour {
         Vector3 startingPosition = transform.position;
 
         if (yDir < -0.5) 
-            startingPosition.y -= (_boxcollider.size.y + 0.5f);   
+            startingPosition.y -= (_boxcollider.size.y + 0.6f);   
         
         if (yDir > 0.5)
             startingPosition.y += (_boxcollider.size.y + 0.1f);
@@ -74,7 +76,7 @@ public abstract class MovingObject : MonoBehaviour {
 
         float frozenTime = 3 * ((frozenHits - 1)/ HitsBeforeFrozen);
         if (mainFire)
-            yield return new WaitForSeconds(TimeBetweenShotsMain + frozenTime);
+            yield return new WaitForSecondsRealtime(TimeBetweenShotsMain + frozenTime);
         else
             yield return new WaitForSeconds(TimeBetweenShotsAlt + frozenTime);
         _canShoot = true;

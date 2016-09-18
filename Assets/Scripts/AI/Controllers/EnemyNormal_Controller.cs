@@ -39,10 +39,11 @@ public class EnemyNormalController : AI_Controller {
     }
 
     private void shootTarget(bool MainFire) {
-        if (target != null)
-             ShootPosition.run(currentObject, target.transform.position, MainFire);
+        if (target != null) {
+            ShootPosition.run(currentObject, target.transform.position, MainFire);
             //ShootPosition.run(currentObject, PredictivePosition.run(this.target.transform.position, prevTarget.transform.position), MainFire);
-        //PredictivePosition.run(currentObject, target.transform.position, prevTarget.transform.position, MainFire);
+            //PredictivePosition.run(currentObject, target.transform.position, prevTarget.transform.position, MainFire);
+        }
 
     }
 }
