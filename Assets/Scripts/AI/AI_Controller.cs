@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class AI_Controller {
+public class AI_Controller {
 
     public MovingObject target;
     public MovingObject currentObject;
@@ -10,5 +10,11 @@ public abstract class AI_Controller {
         this.target = target;
     }
 
-    public abstract void run();
+    public virtual void run() {
+        
+    }
+
+    public void Start() {
+        
+    }
 }
