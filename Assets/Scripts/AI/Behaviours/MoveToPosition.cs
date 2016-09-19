@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using UnityEditor.VersionControl;
-public class MoveToPosition : MonoBehaviour {
+public class MoveToPosition {
 
     private class Point {
         public Vector2 position;
@@ -24,7 +24,7 @@ public class MoveToPosition : MonoBehaviour {
     }
 
     public static void run(MovingObject currentObject, Vector3 target) {
-        retarded(currentObject, target);
+        aStar(currentObject, target);
     }
 
     private static void retarded(MovingObject currentObject, Vector2 target) {
@@ -56,6 +56,7 @@ public class MoveToPosition : MonoBehaviour {
                 grid.Add(pos, point);
             }
         }
+
         Vector2 start = new Vector2(Mathf.RoundToInt(startingPosition.x),
             Mathf.RoundToInt(startingPosition.y));
         if (grid.ContainsKey(start)) {
@@ -69,7 +70,7 @@ public class MoveToPosition : MonoBehaviour {
                     node = node.previous;
                 }
 
-                moveToPoint.position -= new Vector2(0.5f, 0.5f);
+                //moveToPoint.position -= new Vector2(0.5f, 0.5f);
 
                 float dX = moveToPoint.position.x - currentObject.transform.position.x;
                 float dY = moveToPoint.position.y - currentObject.transform.position.y;

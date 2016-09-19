@@ -1,18 +1,13 @@
 ﻿tree("Root")
 	parallel
-		tree("Move")
-		tree("Rotation")
+		repeat mute tree("Movement")
+		repeat mute tree("Shooting")
 
-tree("Move")
+tree("Movement")
 	sequence
-		MoveTo(-1.0, -1.0)
-		MoveTo(1.0, -1.0)
-		MoveTo(0.0, 1.0)
-		MoveTo(-1.0, 1.0)
+		TargetClosestEnemy
+		Move
 
-tree("Rotation")
-	random
-		Rotate(-45.0, 0.5)
-		Rotate(45.0, 1.0)
-		Rotate(-90.0, 2.0)
-		Rotate(-90.0, 3.0)
+tree("Shooting")
+	sequence
+		ShootTarget

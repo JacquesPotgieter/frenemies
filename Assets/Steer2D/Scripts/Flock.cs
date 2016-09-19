@@ -12,7 +12,7 @@ namespace Steer2D
         public float SeperationWeight = .2f;
         public bool DrawGizmos = false;
 
-        List<Enemy> neighbouringAgents = new List<Enemy>();
+        List<SteeringAgent> neighbouringAgents = new List<SteeringAgent>();
         Vector2 currentPosition;
 
         public override Vector2 GetVelocity()
@@ -31,8 +31,8 @@ namespace Steer2D
             if (neighbouringAgents.Count == 0)
                 return averageDirection;
 
-            //foreach (var agent in neighbouringAgents)
-            //    averageDirection += agent.CurrentVelocity;
+            foreach (var agent in neighbouringAgents)
+                averageDirection += agent.CurrentVelocity;
 
             averageDirection /= neighbouringAgents.Count;
             return averageDirection.normalized;
@@ -64,7 +64,7 @@ namespace Steer2D
         {
             neighbouringAgents.Clear();
 
-            foreach (Enemy agent in GameManager.Instance.enemies)
+            foreach (var agent in SteeringAgent.AgentList)
             {
                 if (Vector3.Distance(agent.transform.position, currentPosition) < NeighbourRadius)
                     neighbouringAgents.Add(agent);

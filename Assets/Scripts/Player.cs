@@ -78,7 +78,7 @@ public class Player : MovingObject {
         float dirY = firedDirection.y;
 
         firedDirection.Normalize();
-        float bestAngle = 0.966f;
+        float bestAngle = 0.866f;
         MovingObject closest = null;
 
         foreach (Player enemy in GameManager.Instance.players) {
@@ -141,6 +141,7 @@ public class Player : MovingObject {
 
             _animator.SetTrigger("Dead");
             this.isDead = true;
+            GameManager.Instance.GameOver();
         }
     }
 

@@ -7,7 +7,9 @@ public class GameManager : MonoBehaviour {
 
     public float LevelStartDelay = 2f;						
     public float TurnDelay = 0.1f;
-    public Text infoText;               
+    public Text infoText;
+    public Text _levelText;
+    public GameObject _levelImage;
     [HideInInspector] public int HealthP1 = 100;
     [HideInInspector] public int HealthP2 = 100;              
     public static GameManager Instance = null;  
@@ -16,9 +18,7 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public List<Enemy> enemies;
     [HideInInspector] public BoardManager _boardScript;
     [HideInInspector] public bool Godmode = false;
-
-    private Text _levelText;									
-    private GameObject _levelImage;
+    
     private int _level = 5;                                                                                      
     private bool _doingSetup;                                
     
@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour {
         enemies = new List<Enemy>();
         players = new List<Player>();
         _boardScript = GetComponent<BoardManager>();
+        DontDestroyOnLoad(_boardScript);
         InitGame();
     }
 
@@ -43,30 +44,17 @@ public class GameManager : MonoBehaviour {
     void InitGame() {
         _doingSetup = true;
 
-        _levelImage = GameObject.Find("LevelImage");
-        _levelText = GameObject.Find("LevelText").GetComponent<Text>();
-        _levelText.text = "Enemies: " + _level;
-        _levelImage.SetActive(true);
-
         infoText = GameObject.Find("GameInfo").GetComponent<Text>();
         infoText.text = "";
 
-        Invoke("HideLevelImage", LevelStartDelay);
         enemies.Clear();
         this.players.Clear();
 
         _boardScript.SetupScene(_level);
 
-        GameObject camera = GameObject.Find("Main Camera");
-        camera.transform.position = new Vector3(_boardScript.BoardWidth / 2f, _boardScript.BoardHeight / 2f, -10f);
-        Camera.main.orthographicSize = _boardScript.BoardHeight / 2 + 2;
-
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < players.Length; i++)
             this.players.Add(players[i].GetComponent<Player>());
-        BoardManager boardman = GetComponent<BoardManager>();
-        this.players[1].transform.position = new Vector3(0f, boardman.BoardHeight - 1f, 1f);
-        this.players[0].transform.position = new Vector3(boardman.BoardWidth - 1f, boardman.BoardHeight - 1f, 1f);
     }
 
     void HideLevelImage() {

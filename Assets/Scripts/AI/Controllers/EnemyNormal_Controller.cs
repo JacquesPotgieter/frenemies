@@ -16,7 +16,10 @@ public class EnemyNormalController : AI_Controller {
         changeTarget();
         moveToTarget();
         
-        shootTarget(true);
+        if (Random.value > 0.7)
+            shootTarget(false);
+        else
+            shootTarget(true);
         //update = false;
     }
    

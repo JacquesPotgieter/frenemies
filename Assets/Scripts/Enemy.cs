@@ -28,7 +28,7 @@ public class Enemy : MovingObject {
     public void UpdateEnemy() {
         if (!isDead) {
             CheckIfGameOver();
-            AI_controller.run();
+            //AI_controller.run();
         }
     }
 
