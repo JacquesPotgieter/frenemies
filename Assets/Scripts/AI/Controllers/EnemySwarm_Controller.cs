@@ -14,8 +14,14 @@ public class EnemySwarm_controller : AI_Controller {
     {
         changeTarget();
         moveToTarget();
-        if(InRange())
+        float ran = Random.value;
+        if (ran < .3)
+            shootTarget(false);
+        else
             shootTarget(true);
+
+        if (InRange())
+            currentObject.TimeBetweenShotsMain = 0.2f;
     }
 
     private void moveToTarget()
@@ -50,8 +56,8 @@ public class EnemySwarm_controller : AI_Controller {
     private void shootTarget(bool MainFire)
     {
         if (target != null)
-            ShootPosition.run(currentObject, PredictivePosition.run(this.target.transform.position,prevTarget.transform.position), MainFire);
-
+            // ShootPosition.run(currentObject, PredictivePosition.run(this.target.transform.position,prevTarget.transform.position), MainFire);
+            ShootPosition.run(currentObject, this.target.transform.position, MainFire);
         //PredictivePosition.run(currentObject, target.transform.position, prevTarget.transform.position, MainFire);
     }
 

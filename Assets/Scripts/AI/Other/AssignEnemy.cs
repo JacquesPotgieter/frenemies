@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEditor;
 using System.IO;
+using Assets.Scripts.AI.Controllers;
 
 public class AssignEnemy : MonoBehaviour {
 
@@ -32,6 +33,11 @@ public class AssignEnemy : MonoBehaviour {
     }
 
     private static AI_Controller getController() {
-        return new EnemyNormalController();
+        //float ran = Random.value;
+        //if (ran < .5)
+        //    return new EnemyNormalController();
+        //else
+        //    return new EnemySwarm_controller();
+        return new EnemyPatrol_Controller();
     }
 }

@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour {
 
     private Text _levelText;									
     private GameObject _levelImage;
-    private int _level = 2;                                                                                      
+    private int _level = 5;                                                                                      
     private bool _doingSetup;                                
     
     void Awake() {
