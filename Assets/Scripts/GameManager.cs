@@ -57,19 +57,10 @@ public class GameManager : MonoBehaviour {
             this.players.Add(players[i].GetComponent<Player>());
     }
 
-    void HideLevelImage() {
-        _levelImage.SetActive(false);
-        _doingSetup = false;
-        enabled = true;
-    }
-
     void Update() {
-        if (_doingSetup)
-            return;
-
         StartCoroutine(MoveEnemies());
 
-        if (Input.GetKeyUp(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
             Godmode = !Godmode;
         }
 

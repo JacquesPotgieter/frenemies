@@ -70,6 +70,7 @@ public abstract class MovingObject : MonoBehaviour {
 
         Object prefab = UnityEditor.AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Bullet.prefab", typeof (Bullet));
         Bullet clone = Instantiate(prefab, startingPosition, Quaternion.identity) as Bullet;
+        clone.transform.SetParent(this.transform);
         clone.Init(direction, this, mainFire, bulletDamage);
 
         _canShoot = false;
