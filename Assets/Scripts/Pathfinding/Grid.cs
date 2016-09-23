@@ -27,7 +27,7 @@ public class Grid : MonoBehaviour {
     public int Bottom { get { return 0; } }
     public int Top { get { return Height; } }
 
-    public const float UnitSize = 1f;
+    public const float UnitSize = 0.5f;
 
     private LineRenderer LineRenderer;
     GameObject Player;
@@ -90,77 +90,36 @@ public class Grid : MonoBehaviour {
                     continue;
 
                 Nodes[x, y].CheckConnectionsPass2();
-                Nodes[x, y].DrawConnections ();	//debug
+                //Nodes[x, y].DrawConnections ();	//debug
             }
         }
     }
 
 
     public Point WorldToGrid(Vector2 worldPosition) {
-        Vector2 gridPosition = new Vector2((worldPosition.x * 2f), -(worldPosition.y * 2f) + 1);
+        Node closestNode = null;
+        float distance = 1000000f;
 
-        //adjust to our nearest integer
-        float rx = gridPosition.x % 1;
-        if (rx < 0.5f)
-            gridPosition.x = gridPosition.x - rx;
-        else
-            gridPosition.x = gridPosition.x + (1 - rx);
+        foreach (Node cur in Nodes) {
+            if (cur != null) {
+                if (cur.BadNode) continue;
+                float curDistance = Vector2.Distance(cur.Position, worldPosition);
 
-        float ry = gridPosition.y % 1;
-        if (ry < 0.5f)
-            gridPosition.y = gridPosition.y - ry;
-        else
-            gridPosition.y = gridPosition.y + (1 - ry);
-
-        int x = (int)gridPosition.x;
-        int y = (int)gridPosition.y;
-
-        if (x < 0 || y < 0 || x > Width || y > Height)
-            return null;
-
-        Node node = Nodes[x, y];
-        //We calculated a spot between nodes'
-        //Find nearest neighbor
-        if ((node == null) || (x % 2 == 0 && y % 2 == 0) || (gridPosition.y % 2 == 1 && gridPosition.x % 2 == 1)) {
-            float mag = 100;
-
-
-            if (x < Width && !Nodes[x + 1, y].BadNode) {
-                float mag1 = (Nodes[x + 1, y].Position - worldPosition).magnitude;
-                if (mag1 < mag) {
-                    mag = mag1;
-                    node = Nodes[x + 1, y];
-                }
-            }
-            if (y < Height - 1 && !Nodes[x, y + 1].BadNode) {
-                float mag1 = (Nodes[x, y + 1].Position - worldPosition).magnitude;
-                if (mag1 < mag) {
-                    mag = mag1;
-                    node = Nodes[x, y + 1];
-                }
-            }
-            if (x > 0 && !Nodes[x - 1, y].BadNode) {
-                float mag1 = (Nodes[x - 1, y].Position - worldPosition).magnitude;
-                if (mag1 < mag) {
-                    mag = mag1;
-                    node = Nodes[x - 1, y];
-                }
-            }
-            if (y > 0 && !Nodes[x, y - 1].BadNode) {
-                float mag1 = (Nodes[x, y - 1].Position - worldPosition).magnitude;
-                if (mag1 < mag) {
-                    mag = mag1;
-                    node = Nodes[x, y - 1 + 1];
+                if (curDistance < distance) {
+                    closestNode = cur;
+                    distance = curDistance;
                 }
             }
         }
-        return new Point(node.X, node.Y);
+
+        if (closestNode == null)
+            return null;
+
+        return new Point(closestNode.X, closestNode.Y);
     }
 
-    public static Vector2 GridToWorld(Point gridPosition) {
-        Vector2 world = new Vector2(gridPosition.X / 2f, -(gridPosition.Y / 2f - 0.5f));
-
-        return world;
+    public Vector2 GridToWorld(Point gridPosition) {
+        return Nodes[gridPosition.X, gridPosition.Y].Position;
     }
 
     public bool ConnectionIsValid(Point point1, Point point2) {
@@ -250,44 +209,6 @@ public class Grid : MonoBehaviour {
                 return false;
         }
     }
-
-
-    void Update() {
-        //Pathfinding demo
-        if (Input.GetMouseButtonDown(0)) {
-            //Convert mouse click point to grid coordinates
-            Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Point gridPos = WorldToGrid(worldPos);
-
-            if (gridPos != null) {
-
-                if (gridPos.X > 0 && gridPos.Y > 0 && gridPos.X < Width && gridPos.Y < Height) {
-
-                    //Convert player point to grid coordinates
-                    Point playerPos = WorldToGrid(Player.transform.position);
-                    Nodes[playerPos.X, playerPos.Y].SetColor(Color.blue);
-
-                    //Find path from player to clicked position
-                    BreadCrumb bc = PathFinder.FindPath(this, playerPos, gridPos);
-
-                    int count = 0;
-                    LineRenderer lr = Player.GetComponent<LineRenderer>();
-                    lr.SetVertexCount(100);  //Need a higher number than 2, or crashes out
-                    lr.SetWidth(0.1f, 0.1f);
-                    lr.SetColors(Color.yellow, Color.yellow);
-
-                    //Draw out our path
-                    while (bc != null) {
-                        lr.SetPosition(count, Grid.GridToWorld(bc.position));
-                        bc = bc.next;
-                        count += 1;
-                    }
-                    lr.SetVertexCount(count);
-                }
-            }
-        }
-    }
-
 }
 
 

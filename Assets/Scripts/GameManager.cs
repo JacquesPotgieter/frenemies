@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
     public Text infoText;
     public Text _levelText;
     public GameObject _levelImage;
+    public bool DebugMode = false;
     [HideInInspector] public int HealthP1 = 100;
     [HideInInspector] public int HealthP2 = 100;              
     public static GameManager Instance = null;  
@@ -17,7 +18,7 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public List<Player> players;
     [HideInInspector] public List<Enemy> enemies;
     [HideInInspector] public BoardManager _boardScript;
-    [HideInInspector] public bool Godmode = false;
+    [HideInInspector] public Grid grid;
     
     private int _level = 5;                                                                                      
     private bool _doingSetup;                                
@@ -44,6 +45,7 @@ public class GameManager : MonoBehaviour {
     void InitGame() {
         _doingSetup = true;
 
+        grid = GameObject.Find("Grid").GetComponent<Grid>();
         infoText = GameObject.Find("GameInfo").GetComponent<Text>();
         infoText.text = "";
 
@@ -60,12 +62,8 @@ public class GameManager : MonoBehaviour {
     void Update() {
         StartCoroutine(MoveEnemies());
 
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            Godmode = !Godmode;
-        }
-
-        if (Godmode)
-            infoText.text = "Godmode";
+        if (DebugMode)
+            infoText.text = "Debug";
         else
             infoText.text = "";
     }

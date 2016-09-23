@@ -17,21 +17,19 @@ public class Behaviour : MonoBehaviour {
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
         target = FindClosestTarget.closestTarget(obj, players);
 
-        Task task = Task.current;
-        task.Succeed();
+        Task.current.Succeed();
     }
 
     [Task]
     public void Move() {
         MovingObject obj = gameObject.GetComponent<MovingObject>();
-        Task task = Task.current;
 
         if (target != null) {
-            MoveToPosition.run(obj, target.transform.position);
-            task.Succeed();
+            MoveToPosition.run(obj, target.transform.position, movementPath);
+            Task.current.Succeed();
         }
 
-        task.Fail();
+        Task.current.Fail();
     }
 
     [Task]
@@ -47,6 +45,10 @@ public class Behaviour : MonoBehaviour {
 
     [Task]
     public void BuildPath() {
-        
+        MovingObject currentObject = gameObject.GetComponent<MovingObject>();
+
+        movementPath = FindPath.run(currentObject, target.transform.position);
+
+        Task.current.Succeed();
     }
 }

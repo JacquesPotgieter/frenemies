@@ -34,30 +34,19 @@ public class Node {
 
         Position = position;
 
-        //check if coords inside our grid area
-        if (Position.x < grid.transform.position.x || -Position.y < grid.transform.position.y) {
-            DisableConnections();
-            BadNode = true;
-        }
-        if (Position.x > grid.transform.position.x + grid.transform.localScale.x) {
-            DisableConnections();
-            BadNode = true;
-        }
-        if (-Position.y > grid.transform.position.y + grid.transform.localScale.y) {
-            DisableConnections();
-            BadNode = true;
-        }
-
         //Draw Node on screen for debugging purposes
         Debug = GameObject.Instantiate(Resources.Load("Node")) as GameObject;
-        Debug.transform.position = Position;
-        Debug.GetComponent<DebugDisplay>().X = X;
-        Debug.GetComponent<DebugDisplay>().Y = Y;
-        Debug.transform.SetParent(GameObject.FindGameObjectWithTag("NavMesh").transform);
+        if (GameManager.Instance.DebugMode) {
+            Debug.transform.position = Position;
+            Debug.GetComponent<DebugDisplay>().X = X;
+            Debug.GetComponent<DebugDisplay>().Y = Y;
+            Debug.transform.SetParent(GameObject.FindGameObjectWithTag("NavMesh").transform);
+        }
        }
 
     public void SetColor(Color color) {
-        Debug.transform.GetComponent<SpriteRenderer>().color = color;
+        if (GameManager.Instance.DebugMode)
+            Debug.transform.GetComponent<SpriteRenderer>().color = color;
     }
 
     //Cull nodes if they don't have enough valid connection points (3)
@@ -146,14 +135,16 @@ public class Node {
 
     //debug draw for connection lines
     public void DrawConnections() {
-        if (Top != null) Top.DrawLine();
-        if (Bottom != null) Bottom.DrawLine();
-        if (Left != null) Left.DrawLine();
-        if (Right != null) Right.DrawLine();
-        if (BottomLeft != null) BottomLeft.DrawLine();
-        if (BottomRight != null) BottomRight.DrawLine();
-        if (TopRight != null) TopRight.DrawLine();
-        if (TopLeft != null) TopLeft.DrawLine();
+        if (GameManager.Instance.DebugMode) {
+            if (Top != null) Top.DrawLine();
+            if (Bottom != null) Bottom.DrawLine();
+            if (Left != null) Left.DrawLine();
+            if (Right != null) Right.DrawLine();
+            if (BottomLeft != null) BottomLeft.DrawLine();
+            if (BottomRight != null) BottomRight.DrawLine();
+            if (TopRight != null) TopRight.DrawLine();
+            if (TopLeft != null) TopLeft.DrawLine();
+        }
     }
 
 
@@ -169,6 +160,11 @@ public class Node {
             hit = Physics2D.Raycast(Position, new Vector2(-1, 0), Grid.UnitSize);
             if (hit.collider != null && hit.collider.tag == "Wall") {
                 valid = false;
+
+                if (hit.distance < 0.5f) {
+                    BadNode = true;
+                    DisableConnections();
+                }
             }
             Left = new NodeConnection(this, grid.Nodes[X - 2, Y], valid);
 
@@ -178,6 +174,11 @@ public class Node {
                 hit = Physics2D.Raycast(Position, new Vector2(-1, 1), diagonalDistance);
                 if (hit.collider != null && hit.collider.tag == "Wall") {
                     valid = false;
+
+                    if (hit.distance < 0.5f) {
+                        BadNode = true;
+                        DisableConnections();
+                    }
                 }
                 TopLeft = new NodeConnection(this, grid.Nodes[X - 1, Y - 1], valid);
             }
@@ -188,6 +189,11 @@ public class Node {
                 hit = Physics2D.Raycast(Position, new Vector2(-1, -1), diagonalDistance);
                 if (hit.collider != null && hit.collider.tag == "Wall") {
                     valid = false;
+
+                    if (hit.distance < 0.5f) {
+                        BadNode = true;
+                        DisableConnections();
+                    }
                 }
                 BottomLeft = new NodeConnection(this, grid.Nodes[X - 1, Y + 1], valid);
             }
@@ -199,6 +205,11 @@ public class Node {
             hit = Physics2D.Raycast(Position, new Vector2(1, 0), Grid.UnitSize);
             if (hit.collider != null && hit.collider.tag == "Wall") {
                 valid = false;
+
+                if (hit.distance < 0.5f) {
+                    BadNode = true;
+                    DisableConnections();
+                }
             }
             Right = new NodeConnection(this, grid.Nodes[X + 2, Y], valid);
 
@@ -208,6 +219,11 @@ public class Node {
                 hit = Physics2D.Raycast(Position, new Vector2(1, 1), diagonalDistance);
                 if (hit.collider != null && hit.collider.tag == "Wall") {
                     valid = false;
+
+                    if (hit.distance < 0.5f) {
+                        BadNode = true;
+                        DisableConnections();
+                    }
                 }
                 TopRight = new NodeConnection(this, grid.Nodes[X + 1, Y - 1], valid);
             }
@@ -218,6 +234,11 @@ public class Node {
                 hit = Physics2D.Raycast(Position, new Vector2(1, -1), diagonalDistance);
                 if (hit.collider != null && hit.collider.tag == "Wall") {
                     valid = false;
+
+                    if (hit.distance < 0.5f) {
+                        BadNode = true;
+                        DisableConnections();
+                    }
                 }
                 BottomRight = new NodeConnection(this, grid.Nodes[X + 1, Y + 1], valid);
             }
@@ -229,6 +250,11 @@ public class Node {
             hit = Physics2D.Raycast(Position, new Vector2(0, 1), Grid.UnitSize);
             if (hit.collider != null && hit.collider.tag == "Wall") {
                 valid = false;
+
+                if (hit.distance < 0.5f) {
+                    BadNode = true;
+                    DisableConnections();
+                }
             }
             Top = new NodeConnection(this, grid.Nodes[X, Y - 2], valid);
         }
@@ -239,11 +265,14 @@ public class Node {
             hit = Physics2D.Raycast(Position, new Vector2(0, -1), Grid.UnitSize);
             if (hit.collider != null && hit.collider.tag == "Wall") {
                 valid = false;
+
+                if (hit.distance < 0.5f) {
+                    BadNode = true;
+                    DisableConnections();
+                }
             }
             Bottom = new NodeConnection(this, grid.Nodes[X, Y + 2], valid);
         }
     }
-
-
 }
 

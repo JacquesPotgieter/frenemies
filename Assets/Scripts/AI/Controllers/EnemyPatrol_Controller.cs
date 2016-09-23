@@ -61,26 +61,26 @@ namespace Assets.Scripts.AI.Controllers
 
         private void moveToPosition()
         {
-            if (CanMoveLeft()&&!CanMoveDown())
-            {
-                MoveToPosition.run(currentObject, new Vector3(Startx, Starty++, 0f));
-            }
-            if (CanMoveLeft() && CanMoveDown())
-            {
-                MoveToPosition.run(currentObject, new Vector3(Startx++, Starty, 0f));
-            }
-            if (!CanMoveLeft() && !CanMoveDown())
-            {
-                MoveToPosition.run(currentObject, new Vector3(Startx--, Starty, 0f));
-            }
-            if (!CanMoveLeft() && CanMoveDown())
-            {
-                MoveToPosition.run(currentObject, new Vector3(Startx, Starty--, 0f));
-            }
+            //if (CanMoveLeft()&&!CanMoveDown())
+            //{
+            //    MoveToPosition.run(currentObject, new Vector3(Startx, Starty++, 0f));
+            //}
+            //if (CanMoveLeft() && CanMoveDown())
+            //{
+            //    MoveToPosition.run(currentObject, new Vector3(Startx++, Starty, 0f));
+            //}
+            //if (!CanMoveLeft() && !CanMoveDown())
+            //{
+            //    MoveToPosition.run(currentObject, new Vector3(Startx--, Starty, 0f));
+            //}
+            //if (!CanMoveLeft() && CanMoveDown())
+            //{
+            //    MoveToPosition.run(currentObject, new Vector3(Startx, Starty--, 0f));
+            //}
         }
         private void moveToStart()
         {
-           MoveToPosition.run(currentObject, new Vector3(Startx, Starty, 0f));
+           //MoveToPosition.run(currentObject, new Vector3(Startx, Starty, 0f));
         }
 
         private void changeTarget()

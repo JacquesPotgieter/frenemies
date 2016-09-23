@@ -173,7 +173,7 @@ public class Player : MovingObject {
     }
 
     private void MainBulletHit(Bullet bullet) {      
-        if (!GameManager.Instance.Godmode)
+        if (!GameManager.Instance.DebugMode)
             this._healthPoints -= bullet.DamageDone;        
     }
 

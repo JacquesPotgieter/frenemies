@@ -33,8 +33,8 @@ public class EnemyNormalController : AI_Controller {
         if (target != null) {
             float distance = Vector3.Distance(this.currentObject.transform.position, this.target.transform.position);
 
-            if (distance > minDistance)
-               MoveToPosition.run(currentObject, target.transform.position);
+            //if (distance > minDistance)
+               //MoveToPosition.run(currentObject, target.transform.position);
                // MoveToPosition.run(currentObject, PredictivePosition.run(this.target.transform.position, prevTarget.transform.position));
         }
     }

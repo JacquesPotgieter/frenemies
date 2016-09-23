@@ -1,11 +1,12 @@
 ﻿tree("Root")
 	parallel
 		repeat mute tree("Movement")
-		repeat mute tree("Shooting")
+		repeat mute tree("Shooting")	
 
 tree("Movement")
-	sequence
+	sequence	
 		TargetClosestEnemy
+		BuildPath	
 		Move
 
 tree("Shooting")

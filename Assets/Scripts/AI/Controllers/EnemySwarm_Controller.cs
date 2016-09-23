@@ -30,8 +30,8 @@ public class EnemySwarm_controller : AI_Controller {
         {
             float distance = Vector3.Distance(this.currentObject.transform.position, this.target.transform.position);
 
-            if (distance > minDistance)
-                MoveToPosition.run(currentObject, target.transform.position);
+            //if (distance > minDistance)
+            //    MoveToPosition.run(currentObject, target.transform.position);
         }
     }
 
