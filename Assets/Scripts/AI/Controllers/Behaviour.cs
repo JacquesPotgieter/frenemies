@@ -9,6 +9,8 @@ public class Behaviour : MonoBehaviour {
     private MovingObject EnemyObject;
     private Vector2 ShootingTarget;
     private Vector2 MovementTarget;
+    private float minDistanceNotToIgnore = 3f;
+    private int SwarmSize = 2;
 
     private List<Vector2> movementPath;
 
@@ -67,9 +69,54 @@ public class Behaviour : MonoBehaviour {
         Task.current.Succeed();
     }
 
+
+
     #endregion MOVEMENT METHODS -------------------------------------------------------------------------------------------------------------------------
 
 
+    #region SWARM METHODS -------------------------------------------------------------------------------------------------------------------------
+
+    [Task]
+    public void SwarmMoveToEnemy()
+    { // Changes MovementTarget to ClosestEnemy or Enemy with lowest health.
+        MovingObject currentObject = gameObject.GetComponent<MovingObject>();
+        List<MovingObject> targets = new List<MovingObject>();
+        for (int i = 0; i < GameManager.Instance.players.Count; i++)
+            targets.Add(GameManager.Instance.players[i]);
+
+        MovingObject target = FindLowestHealthTarget.LowestTarget(currentObject, targets);
+        MovingObject potentialTarget = FindClosestTarget.closestTarget(currentObject, targets);
+        if (target != null && potentialTarget != null)
+        {
+            float distance = Vector3.Distance(currentObject.transform.position, potentialTarget.transform.position);
+            if (distance <= minDistanceNotToIgnore)
+                MovementTarget = potentialTarget.transform.position;
+            else
+                MovementTarget = target.transform.position;
+
+            Task.current.Succeed();
+            return;
+        }
+
+        Task.current.Fail();
+    }
+
+    [Task]
+    private void InRange() // Checks if inrange to shootfaster
+    {
+        MovingObject currentObject = gameObject.GetComponent<MovingObject>();
+        int count = 0;
+        for (int i = 0; i < GameManager.Instance.enemies.Count; i++)
+            if (Vector3.Distance(currentObject.transform.position, GameManager.Instance.enemies[i].transform.position) < range)
+                count++;
+        if (count > SwarmSize)
+            currentObject.TimeBetweenShotsMain = 0.2f;
+        else
+            currentObject.TimeBetweenShotsMain = 0.6f;
+        Task.current.Succeed();
+    }
+
+    #endregion SWARM METHODS -------------------------------------------------------------------------------------------------------------------------
 
     [Task]
     public void ShootTarget() {
