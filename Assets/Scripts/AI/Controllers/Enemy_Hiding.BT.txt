@@ -1,19 +1,20 @@
 ﻿tree("Root")
 	parallel
-		repeat 
-			sequence
-				mute tree("BuildMovement")
-				Wait(5.0)
+		repeat mute tree("BuildMovement")			
 		repeat mute tree("Movement")
 		repeat mute tree("Shooting")	
 
 tree("BuildMovement")
 	sequence	
-		BuildPath	
+		MoveToHidingSpot	
+		random
+			Wait(1.1)
+			Wait(1.0)
+			Wait(0.9)		
 
 tree("Movement")
 	sequence	
-		MoveToHidingSpot	
+		BuildPath	
 		Move
 
 tree("Shooting")

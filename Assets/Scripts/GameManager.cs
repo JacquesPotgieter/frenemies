@@ -5,6 +5,7 @@ using UnityEngine.UI;					//Allows us to use UI.
 
 public class GameManager : MonoBehaviour {
 
+    public int NumberEnemies = 5;
     public float LevelStartDelay = 2f;						
     public float TurnDelay = 0.1f;
     public Text infoText;
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public BoardManager _boardScript;
     [HideInInspector] public Grid grid;
     
-    private int _level = 5;                                                                                      
+                                                                                         
     private bool _doingSetup;                                
     
     void Awake() {
@@ -38,7 +39,7 @@ public class GameManager : MonoBehaviour {
     }
 
     void OnLevelWasLoaded(int index) {
-        _level++;
+        NumberEnemies++;
         InitGame();
     }
 
@@ -52,7 +53,7 @@ public class GameManager : MonoBehaviour {
         enemies.Clear();
         this.players.Clear();
 
-        _boardScript.SetupScene(_level);
+        _boardScript.SetupScene(NumberEnemies);
 
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < players.Length; i++)
@@ -74,9 +75,9 @@ public class GameManager : MonoBehaviour {
 
     public void GameOver() {
         if (HealthP1 < 0)
-            _levelText.text = _level + " Enemies overwelmed Player 1";
+            _levelText.text = NumberEnemies + " Enemies overwelmed Player 1";
         else
-            _levelText.text = _level + " Enemies overwelmed Player 2";
+            _levelText.text = NumberEnemies + " Enemies overwelmed Player 2";
         _levelImage.SetActive(true);
         enabled = false;
     }
