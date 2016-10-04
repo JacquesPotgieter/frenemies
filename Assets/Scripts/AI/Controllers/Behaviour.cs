@@ -9,8 +9,13 @@ public class Behaviour : MonoBehaviour {
     private MovingObject EnemyObject;
     private Vector2 ShootingTarget;
     private Vector2 MovementTarget;
+
     private float minDistanceNotToIgnore = 3f;
     private int SwarmSize = 2;
+    private float range = 3f;
+
+    private Vector3 PrevMovementTarget;
+
 
     private List<Vector2> movementPath;
 
@@ -117,6 +122,128 @@ public class Behaviour : MonoBehaviour {
     }
 
     #endregion SWARM METHODS -------------------------------------------------------------------------------------------------------------------------
+
+    [Task]
+    public void PredictiveMoveToEnemy()
+    { // Changes MovementTarget to a Predicted location of enemy
+        MovingObject obj = gameObject.GetComponent<MovingObject>();
+
+        List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
+        EnemyObject = FindClosestTarget.closestTarget(obj, players);
+        if (EnemyObject != null)
+        {
+            if (ShootingTarget != null)
+            {
+                PrevMovementTarget = MovementTarget;
+            }
+            else
+            {
+                PrevMovementTarget = EnemyObject.transform.position;
+            }
+
+            Vector3 finalpos = EnemyObject.transform.position;
+            Vector3 velocity = (EnemyObject.transform.position - PrevMovementTarget) / Time.deltaTime;
+
+            velocity *= Time.deltaTime;
+            velocity *= 0.6f;
+            finalpos += velocity;
+
+            if (EnemyObject.transform.position.x - PrevMovementTarget.x > 0)
+            {
+                MovementTarget = finalpos;
+                MovementTarget.x += 2.85f;
+                Debug.Log("right");
+              
+            }
+            else
+            {
+                MovementTarget = finalpos;
+                MovementTarget.x += -2.85f;
+                Debug.Log("left");
+             
+            }
+         
+            Task.current.Succeed();
+            return;
+        }
+
+        Task.current.Fail();
+    }
+
+    [Task]
+    public void PredictivePos()
+    { // Changes MovementTarget to a ClosestEnemy
+        MovingObject obj = gameObject.GetComponent<MovingObject>();
+
+        List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
+        EnemyObject = FindClosestTarget.closestTarget(obj, players);
+        if (EnemyObject != null)
+        {
+            if (ShootingTarget != null)
+            {
+                PrevMovementTarget = ShootingTarget;
+            }
+            else
+            {
+                PrevMovementTarget = EnemyObject.transform.position;
+            }
+            //MovementTarget = PredictivePosition.run(EnemyObject.transform.position, PrevMovementTarget);
+            Vector3 finalpos = EnemyObject.transform.position;
+            Vector3 velocity = (EnemyObject.transform.position - PrevMovementTarget) / Time.deltaTime;
+
+            velocity *= Time.deltaTime;
+            velocity *= 0.6f;
+            finalpos += velocity;
+            //MovementTarget = EnemyObject.transform.position + (EnemyObject.transform.position * 0.15f);
+            
+            if (EnemyObject.transform.position.x - PrevMovementTarget.x> 0)
+            {
+                ShootingTarget = finalpos;
+                ShootingTarget.x += 1.85f;
+                Debug.Log("right");
+                //if (EnemyObject.transform.position.y - PrevMovementTarget.y > 0)
+                //{
+                //    ShootingTarget.y += 1.15f;
+                //    Debug.Log("right-Up");
+                //}
+                //else {
+                //    ShootingTarget.y -= 1.15f;
+                //    Debug.Log("right-Down");
+                //}
+            }
+            else
+            {
+                ShootingTarget = finalpos;
+                ShootingTarget.x += -1.85f;
+                Debug.Log("left");
+                //if (EnemyObject.transform.position.y - PrevMovementTarget.y > 0)
+                //{
+                //    ShootingTarget.y += 1.15f;
+                //    Debug.Log("left-Up");
+                //}
+                //else
+                //{
+                //    ShootingTarget.y -= 1.15f;
+                //    Debug.Log("left-Down");
+                //}
+            }
+            //if (EnemyObject.transform.position.y - PrevMovementTarget.y > 0)
+            //{
+
+
+            //    MovementTarget.y += 1.15f;
+            //}
+            //else
+            //{
+
+            //    MovementTarget.y += -1.15f;
+            //}
+            Task.current.Succeed();
+            return;
+        }
+
+        Task.current.Fail();
+    }
 
     [Task]
     public void ShootTarget() {

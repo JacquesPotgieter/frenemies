@@ -17,6 +17,11 @@ public abstract class MovingObject : MonoBehaviour {
     protected float _inverseMoveTime;
     private bool _canShoot = true;
 
+    public float getVelocity()
+    {
+        return _rb2D.velocity.x;
+    }
+
 	protected virtual void Start () {
         _boxcollider = GetComponent<BoxCollider2D>();
         _rb2D = GetComponent<Rigidbody2D>();

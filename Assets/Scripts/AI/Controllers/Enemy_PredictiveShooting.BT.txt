@@ -1,0 +1,19 @@
+﻿tree("Root")
+	parallel
+		repeat mute tree("Movement")
+		repeat mute tree("Shooting")	
+
+tree("Movement")
+	sequence	
+		MoveToEnemy
+		BuildPath	
+		Move
+
+tree("Shooting")
+	sequence
+		PredictivePos
+		ShootTarget
+		random
+			Wait(0.1)
+			Wait(0.5)
+			Wait(0.9)
