@@ -187,5 +187,23 @@ public class Player : MovingObject {
 
     public void killedLastEnemy() {
         this._healthPoints += 30;
+        if (GameManager.Instance.SpecialObjectP1 != GameManager.Instance.SpecialObjectP2)
+        {
+            if (GameManager.Instance.players[0].PlayerNumber != this.PlayerNumber)
+            {
+                int c = GameManager.Instance.players[1]._healthPoints;
+                GameManager.Instance.players[1]._healthPoints = this._healthPoints;
+                this._healthPoints = c;
+            }
+            else {
+                int c = GameManager.Instance.players[0]._healthPoints;
+                GameManager.Instance.players[0]._healthPoints = this._healthPoints;
+                this._healthPoints = c;
+            }
+            
+
+        }
     }
+
+   
 }

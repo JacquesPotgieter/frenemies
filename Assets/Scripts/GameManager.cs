@@ -5,7 +5,7 @@ using UnityEngine.UI;					//Allows us to use UI.
 
 public class GameManager : MonoBehaviour {
 
-    public int NumberEnemies = 5;
+    public int NumberEnemies = 1;
     public float LevelStartDelay = 2f;						
     public float TurnDelay = 0.1f;
     public Text infoText;
@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public List<Enemy> enemies;
     [HideInInspector] public BoardManager _boardScript;
     [HideInInspector] public Grid grid;
+    public bool SpecialObjectP1 = false;
+    public bool SpecialObjectP2 = false;
     
                                                                                          
     private bool _doingSetup;                                
@@ -85,7 +87,15 @@ public class GameManager : MonoBehaviour {
     public void checkIfAllEnemiesKilled(Enemy enemy) {
         if (enemies.Count == 1 && enabled) {
             enemy.lastShooter.killedLastEnemy();
+            if (SpecialObjectP1!=SpecialObjectP2)
+            {
+                int c = HealthP1;
+                HealthP1 = -1000;
+                HealthP2 = +1000;
+
+            }
             AllEnemiesKilled();
+            Debug.Log("lalalalalal"+SpecialObjectP2+"2:1"+SpecialObjectP1);
         }
     }
 
