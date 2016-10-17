@@ -3,25 +3,38 @@ using System.Collections;
 using UnityEditor;
 using System.IO;
 using Assets.Scripts.AI.Controllers;
+using Panda;
 
 public class AssignEnemy : MonoBehaviour {
 
-    public static void run(Enemy enemy) {
+    private static string[] animations = { "EnemyOrgeFemale", "EnemyOrgeMale" };
+    private static string[] enemyTypes = { "EnemyNormal", "EnemyHiding", "EnemyPredictiveMovement", "EnemyPredictiveShooting", "EnemySwarm" };
+
+    public static Enemy run(Vector2 position) {
+        Enemy enemy = SelectType(position);
+        enemy.enabled = false;
+
         int healthPoints = getHealthPoints();
         int damageDealt = getDamageDealt();
         RuntimeAnimatorController animator = getAnimatorController();
-        AI_Controller controller = getController();
-        controller.currentObject = enemy;
 
-        enemy.init(controller, healthPoints, damageDealt, animator);
+        enemy.init(healthPoints, damageDealt, animator);
+        enemy.enabled = true;
+        return enemy;
+    }
 
-        Debug.Log(animator);
+    private static Enemy SelectType(Vector2 position) {
+        int pos = Random.Range(0, enemyTypes.Length);
+        GameObject instance = Instantiate(Resources.Load("Enemy/" + enemyTypes[pos])) as GameObject;
+        instance.transform.position = position;
+        GameManager.Instance.AddEnemyToList(instance.GetComponent<Enemy>());
+
+        return instance.GetComponent<Enemy>();
     }
 
     private static RuntimeAnimatorController getAnimatorController() {
-        string asset = "AnimationsControllers/Characters";
-        Debug.Log(Path.GetDirectoryName(asset));
-        return null; //(RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(asset, typeof(RuntimeAnimatorController)));
+        int pos = Random.Range(0, animations.Length);
+        return Instantiate(Resources.Load("Animations/" + animations[pos])) as RuntimeAnimatorController;
     }
 
     private static int getHealthPoints() {
@@ -30,14 +43,5 @@ public class AssignEnemy : MonoBehaviour {
 
     private static int getDamageDealt() {
         return 5;
-    }
-
-    private static AI_Controller getController() {
-        //float ran = Random.value;
-        //if (ran < .5)
-        //    return new EnemyNormalController();
-        //else
-        //    return new EnemySwarm_controller();
-        return new EnemyPatrol_Controller();
     }
 }

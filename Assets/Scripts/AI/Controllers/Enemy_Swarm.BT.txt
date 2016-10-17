@@ -12,4 +12,6 @@ tree("Movement")
 tree("Shooting")
 	sequence
 		InRange
+		AimForMovementEnemy
+		EnemyVisible
 		ShootTarget

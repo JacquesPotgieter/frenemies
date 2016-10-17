@@ -2,27 +2,23 @@
 using System.Collections;
 using System;
 using UnityEngine.UI;
+using Panda;
 
 public class Enemy : MovingObject {
-   
-    public AI_Controller AI_controller;
 
     [HideInInspector] public Player lastShooter;
     [HideInInspector] public Text healthText;
     private int _healthPoints;
-    private Animator _animator;
     private bool isDead = false;
 
-    public void init(AI_Controller AI_controller, int health, int damage, RuntimeAnimatorController animator) {
-        this.AI_controller = AI_controller;
+    public void init(int health, int damage, RuntimeAnimatorController animator) {
         this._healthPoints = health;
         this.DamageDealt = damage;
-        //this._animator.runtimeAnimatorController = animator;
+        _animator = GetComponent<Animator>();
+        this._animator.runtimeAnimatorController = animator;
     }
 
     protected override void Start () {
-        _animator = GetComponent<Animator>();
-        AssignEnemy.run(this);
         base.Start();
 	}
 

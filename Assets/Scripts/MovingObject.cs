@@ -15,6 +15,7 @@ public abstract class MovingObject : MonoBehaviour {
     private BoxCollider2D _boxcollider;
     private Rigidbody2D _rb2D;
     protected float _inverseMoveTime;
+    protected Animator _animator;
     private bool _canShoot = true;
 
     public float getVelocity()
@@ -25,6 +26,7 @@ public abstract class MovingObject : MonoBehaviour {
 	protected virtual void Start () {
         _boxcollider = GetComponent<BoxCollider2D>();
         _rb2D = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
         resetMoveTime();
 	}
 
@@ -77,6 +79,11 @@ public abstract class MovingObject : MonoBehaviour {
         Bullet clone = Instantiate(prefab, startingPosition, Quaternion.identity) as Bullet;
         clone.transform.SetParent(this.transform);
         clone.Init(direction, this, mainFire, bulletDamage);
+
+        if (direction.x > double.Epsilon) {
+            _animator.SetTrigger("ShootRight");
+        } else
+            _animator.SetTrigger("ShootLeft");
 
         _canShoot = false;
 

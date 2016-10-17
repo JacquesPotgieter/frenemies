@@ -24,11 +24,8 @@ public class BoardManager : MonoBehaviour {
     public int BoardHeight = 16;
 
     public static Count WallCount = new Count(10, 30);
-    public GameObject Exit;
     public GameObject[] FloorTiles;
     public GameObject[] WallTiles;
-    public GameObject[] FoodTiles;
-    public GameObject[] EnemyTiles;
     public GameObject[] OuterWallTiles;
 
     private Transform _boardHolder;
@@ -42,20 +39,19 @@ public class BoardManager : MonoBehaviour {
     }
 
 
-    IEnumerator CreateEnemies(GameObject[] tileArray, Transform boardHolder, List<Vector2> positions, float timeDelay, List<ParticleSystem> particles) {
+    IEnumerator CreateEnemies(Transform boardHolder, List<Vector2> positions, float timeDelay, List<ParticleSystem> particles) {
         yield return new WaitForSeconds(timeDelay);
 
         foreach (Vector2 position in positions) {
-            GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
+            Enemy instance = AssignEnemy.run(position);
 
-            GameObject instance = Instantiate(tileChoice, position, Quaternion.identity) as GameObject;
             instance.transform.SetParent(boardHolder);
-            GameManager.Instance.AddEnemyToList(instance.GetComponent<Enemy>());
 
             Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
             GameObject healthInfo = Instantiate(Resources.Load("HealthInfo")) as GameObject;
             healthInfo.transform.SetParent(canvas.transform);
-            instance.GetComponent<Enemy>().healthText = healthInfo.GetComponent<Text>();
+            instance.healthText = healthInfo.GetComponent<Text>();
+
         }
 
         foreach (ParticleSystem cur in particles)
@@ -104,6 +100,6 @@ public class BoardManager : MonoBehaviour {
         List<Vector2> enemies = ChooseSpawnSpots(numberEnemies);
         List<ParticleSystem> particles = createSpawnParticles(enemies);
 
-        StartCoroutine(CreateEnemies(EnemyTiles, holder, enemies, startDelay, particles));          
+        StartCoroutine(CreateEnemies(holder, enemies, startDelay, particles));          
     }
 }

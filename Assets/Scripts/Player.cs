@@ -21,7 +21,6 @@ public class Player : MovingObject {
     public string ShootMainButton = "Fire1_P1";
     public string ShootAltButton = "Fire2_P1";
 
-    private Animator _animator;
     private int _healthPoints;
     private bool isDead = false;
 
@@ -31,7 +30,6 @@ public class Player : MovingObject {
     }
 
     protected override void Start() {
-        _animator = GetComponent<Animator>();
         if (PlayerNumber.Equals("1"))
             _healthPoints = GameManager.Instance.HealthP1;
         else
@@ -69,7 +67,7 @@ public class Player : MovingObject {
             if (didShootMain > double.Epsilon)
                 autoAim(new Vector2(horizontalFire, verticalFire), true);
             else if (didShootAlt > double.Epsilon)
-                autoAim(new Vector2(horizontalFire, verticalFire), false);            
+                autoAim(new Vector2(horizontalFire, verticalFire), false);    
         }
     }
 
