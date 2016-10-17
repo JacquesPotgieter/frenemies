@@ -20,11 +20,11 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public List<Enemy> enemies;
     [HideInInspector] public BoardManager _boardScript;
     [HideInInspector] public Grid grid;
+    [HideInInspector] public Transform enemyHolder;
+    [HideInInspector] public int totalEnemiesKilled;
     public bool SpecialObjectP1 = false;
-    public bool SpecialObjectP2 = false;
-    
-                                                                                         
-    private bool _doingSetup;                                
+    public bool SpecialObjectP2 = false;            
+                      
     
     void Awake() {
         if (Instance == null)
@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
         enemies = new List<Enemy>();
         players = new List<Player>();
+        grid = GameObject.Find("Grid").GetComponent<Grid>();
+        infoText = GameObject.Find("GameInfo").GetComponent<Text>();
+        enemyHolder = new GameObject("Enemies").transform;
         _boardScript = GetComponent<BoardManager>();
         DontDestroyOnLoad(_boardScript);
         InitGame();
@@ -45,17 +48,13 @@ public class GameManager : MonoBehaviour {
         InitGame();
     }
 
-    void InitGame() {
-        _doingSetup = true;
-
-        grid = GameObject.Find("Grid").GetComponent<Grid>();
-        infoText = GameObject.Find("GameInfo").GetComponent<Text>();
+    void InitGame() {               
         infoText.text = "";
 
         enemies.Clear();
         this.players.Clear();
-
-        _boardScript.SetupScene(NumberEnemies);
+        grid.Setup();
+        _boardScript.SpawnEnemies(NumberEnemies, enemyHolder, LevelStartDelay);
 
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < players.Length; i++)
@@ -63,8 +62,6 @@ public class GameManager : MonoBehaviour {
     }
 
     void Update() {
-        StartCoroutine(MoveEnemies());
-
         if (DebugMode)
             infoText.text = "Debug";
         else
@@ -77,9 +74,9 @@ public class GameManager : MonoBehaviour {
 
     public void GameOver() {
         if (HealthP1 < 0)
-            _levelText.text = NumberEnemies + " Enemies overwelmed Player 1";
+            _levelText.text = totalEnemiesKilled + " Enemies died before Player 1";
         else
-            _levelText.text = NumberEnemies + " Enemies overwelmed Player 2";
+            _levelText.text = totalEnemiesKilled + " Enemies died before Player 2";
         _levelImage.SetActive(true);
         enabled = false;
     }
@@ -99,32 +96,16 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public void AllEnemiesKilled() {
-        Invoke("Restart", LevelStartDelay);
+    private void AllEnemiesKilled() {
+        NumberEnemies++;
+        SpawnNewEnemies();
+    }
 
-        foreach (Player cur in players)
-            cur.enabled = false;
-
-        enabled = false;
+    private void SpawnNewEnemies() {
+        _boardScript.SpawnEnemies(NumberEnemies, enemyHolder, LevelStartDelay);
     }
 
     private void Restart() {
         Application.LoadLevel(Application.loadedLevel);
-    }
-
-    IEnumerator MoveEnemies() {
-        yield return new WaitForSeconds(TurnDelay);
-
-        if (enemies.Count == 0 && enabled) {
-            AllEnemiesKilled();
-            yield break;
-        }
-
-        for (int i = 0; i < enemies.Count; i++) {
-            if (i < enemies.Count) {
-                if (enemies[i] != null)
-                    enemies[i].UpdateEnemy();
-            }
-        }
     }
 }

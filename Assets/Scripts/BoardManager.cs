@@ -2,7 +2,8 @@
 using System.Collections;
 using System;
 using System.Collections.Generic; 		//Allows us to use Lists.
-using Random = UnityEngine.Random; 		//Tells Random to use the Unity Engine random number generator.
+using Random = UnityEngine.Random;      //Tells Random to use the Unity Engine random number generator.
+using UnityEngine.UI;
 
 public class BoardManager : MonoBehaviour {
 
@@ -31,49 +32,78 @@ public class BoardManager : MonoBehaviour {
     public GameObject[] OuterWallTiles;
 
     private Transform _boardHolder;
-    [HideInInspector] public Dictionary<Vector2, Boolean> _gridPositions = new Dictionary<Vector2, bool>();
-
-    void InitialiseList() {
-        _gridPositions.Clear();
-
-        for (int x = 0; x <= BoardWidth; x++) {
-            for (int y = 0; y <= BoardHeight; y++) {
-                _gridPositions.Add(new Vector2(x, y), true);
-            }
-        }
-    }
     
     //RandomPosition returns a random position from our list gridPositions.
-    Vector3 RandomPosition(bool stationary) {
+    Vector3 RandomPosition() {
         int randomX = Random.Range(1, BoardWidth + 1);
         int randomY = Random.Range(1, BoardHeight + 1);
         Vector2 position = new Vector2(randomX, randomY);
-        if (stationary) {
-            _gridPositions.Remove(position);
-            _gridPositions.Add(position, false);
-        }
         return position - new Vector2(0.5f, 0.5f);
     }
 
-    void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum, Transform boardHolder, bool stationary) {
-        int objectCount = Random.Range(minimum, maximum + 1);
 
-        for (int i = 0; i < objectCount; i++) {
-            Vector3 randomPosition = RandomPosition(stationary);
+    IEnumerator CreateEnemies(GameObject[] tileArray, Transform boardHolder, List<Vector2> positions, float timeDelay, List<ParticleSystem> particles) {
+        yield return new WaitForSeconds(timeDelay);
+
+        foreach (Vector2 position in positions) {
             GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
-            GameObject instance = Instantiate(tileChoice, randomPosition, Quaternion.identity) as GameObject;
+
+            GameObject instance = Instantiate(tileChoice, position, Quaternion.identity) as GameObject;
             instance.transform.SetParent(boardHolder);
+            GameManager.Instance.AddEnemyToList(instance.GetComponent<Enemy>());
+
+            Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+            GameObject healthInfo = Instantiate(Resources.Load("HealthInfo")) as GameObject;
+            healthInfo.transform.SetParent(canvas.transform);
+            instance.GetComponent<Enemy>().healthText = healthInfo.GetComponent<Text>();
         }
+
+        foreach (ParticleSystem cur in particles)
+            Destroy(cur.gameObject);
     }
 
-    public void SetupScene(int level){
-        InitialiseList();
+    List<ParticleSystem> createSpawnParticles(List<Vector2> enemies) {
+        List<ParticleSystem> particles = new List<ParticleSystem>();
 
-        ////Determine number of enemies based on current level number, based on a logarithmic progression
-        int enemyCount = level;
+        foreach (Vector2 curEnemy in enemies) {
+            GameObject curParticleObj = Instantiate(Resources.Load("SpawnParticle")) as GameObject;
+            ParticleSystem curParticle = curParticleObj.GetComponent<ParticleSystem>();
+            float x = curEnemy.x;
+            float y = curEnemy.y - 0.5f;
+            curParticle.transform.position = new Vector2(x, y);
 
-        ////Instantiate a random number of enemies based on minimum and maximum, at randomized positions.
-        Transform enemyHolder = new GameObject("Enemies").transform;
-        LayoutObjectAtRandom(EnemyTiles, enemyCount, enemyCount, enemyHolder, false);
+            particles.Add(curParticle);
+        }
+
+        return particles;
+    }
+
+    List<Vector2> ChooseSpawnSpots(int numberEnemies) {
+        List<Vector2> enemies = new List<Vector2>();
+
+        for (int i = 0; i < numberEnemies; i++) {
+            Vector3 randomPosition;
+            Point point;
+            Node node = null;
+            while (node == null) {
+                randomPosition = RandomPosition();
+                point = GameManager.Instance.grid.WorldToGrid(randomPosition);
+                node = GameManager.Instance.grid.Nodes[point.X, point.Y];
+
+                if (node.BadNode)
+                    node = null;
+            }
+
+            enemies.Add(node.Position);
+        }
+
+        return enemies;
+    }
+
+    public void SpawnEnemies(int numberEnemies, Transform holder, float startDelay) {
+        List<Vector2> enemies = ChooseSpawnSpots(numberEnemies);
+        List<ParticleSystem> particles = createSpawnParticles(enemies);
+
+        StartCoroutine(CreateEnemies(EnemyTiles, holder, enemies, startDelay, particles));          
     }
 }

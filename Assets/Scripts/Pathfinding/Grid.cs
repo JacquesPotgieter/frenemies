@@ -33,6 +33,10 @@ public class Grid : MonoBehaviour {
     GameObject Player;
 
     void Awake() {
+        if (Nodes == null)
+            Setup();
+    }
+    public void Setup() {
         Player = GameObject.FindGameObjectsWithTag("Player")[0];
         LineRenderer = transform.GetComponent<LineRenderer>();
 
@@ -94,7 +98,6 @@ public class Grid : MonoBehaviour {
             }
         }
     }
-
 
     public Point WorldToGrid(Vector2 worldPosition) {
         Node closestNode = null;

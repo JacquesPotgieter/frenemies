@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class Enemy : MovingObject {
    
     public AI_Controller AI_controller;
 
     [HideInInspector] public Player lastShooter;
+    [HideInInspector] public Text healthText;
     private int _healthPoints;
     private Animator _animator;
     private bool isDead = false;
@@ -19,15 +21,19 @@ public class Enemy : MovingObject {
     }
 
     protected override void Start () {
-        GameManager.Instance.AddEnemyToList(this);
         _animator = GetComponent<Animator>();
         AssignEnemy.run(this);
         base.Start();
 	}
 
-    public void UpdateEnemy() {
+    void Update() {
         if (!isDead) {
             CheckIfGameOver();
+            float x = transform.position.x;
+            float y = transform.position.y - 0.8f;
+
+            healthText.transform.position = new Vector3(x, y, 0f);
+            healthText.text = _healthPoints + "";
             //AI_controller.run();
         }
     }
@@ -52,6 +58,8 @@ public class Enemy : MovingObject {
             _animator.SetTrigger("Dead");
             isDead = true;
             GameManager.Instance.enemies.Remove(this);
+            GameManager.Instance.totalEnemiesKilled++;
+            Destroy(healthText);
             Destroy(gameObject);
         }
     }

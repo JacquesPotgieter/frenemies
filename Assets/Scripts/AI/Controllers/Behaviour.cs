@@ -245,6 +245,32 @@ public class Behaviour : MonoBehaviour {
         Task.current.Fail();
     }
 
+
+    #region Shooting Methods
+    [Task]
+    public void AimForMovementEnemy() {
+        this.ShootingTarget = this.MovementTarget;
+
+        Task.current.Succeed();
+    }
+
+    [Task]
+    public void EnemyVisible() {
+        Vector2 direction = (Vector2)gameObject.transform.position - ShootingTarget;
+        direction.Normalize();
+        float dist = Vector2.Distance((Vector2)gameObject.transform.position, ShootingTarget);
+
+        BoxCollider2D col = gameObject.GetComponent<BoxCollider2D>();
+        col.enabled = false;
+        RaycastHit2D hit = Physics2D.Raycast((Vector2)gameObject.transform.position, direction, dist);
+        col.enabled = true;
+
+        if (hit.collider == null)
+            Task.current.Succeed();
+        else
+            Task.current.Fail();
+    }
+
     [Task]
     public void ShootTarget() {
         bool mainFire = !(Random.value > 0.7);
@@ -255,4 +281,6 @@ public class Behaviour : MonoBehaviour {
 
         Task.current.Succeed();
     }
+
+    #endregion Shooting Methods
 }
