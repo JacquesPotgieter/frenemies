@@ -115,9 +115,4 @@ public abstract class MovingObject : MonoBehaviour {
     }
 
     protected abstract void OnCollisionEnter2D(Collision2D collision);
-
-    public static implicit operator Vector2(MovingObject v)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -16,7 +16,7 @@ public class Behaviour : MonoBehaviour {
     private float range = 3f;
     private bool HealthParticle = false;
     private int HealthPointCounter = 0;
-    private float PredictiveRange = 8f;
+    private float PredictiveRange = 0f;
 
     private Vector3 PrevMovementTarget;
 
@@ -183,16 +183,16 @@ public class Behaviour : MonoBehaviour {
        
         if (EnemyObject != null)
         {
-            if (Vector2.Distance(obj, EnemyObject) < PredictiveRange)
+            if (Vector2.Distance(obj.transform.position, EnemyObject.transform.position) < PredictiveRange)
             {
-                Debug.Log("This If staement causes it not to work"+Vector2.Distance(obj, EnemyObject));
                 Task.current.Fail();
                 return;
                 //MovementTarget = EnemyObject.transform.position;
             }
 
-            if (ShootingTarget != null)
+            if (ShootingTarget != null) //#################################################################################### Seems to always be true
             {
+                Debug.Log("This If staement causes it not to work" + Vector2.Distance(obj.transform.position, EnemyObject.transform.position));
                 Task.current.Fail();
                 return;
             }
@@ -239,7 +239,7 @@ public class Behaviour : MonoBehaviour {
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
         EnemyObject = FindClosestTarget.closestTarget(obj, players);
 
-        if (Vector2.Distance(obj, EnemyObject) < PredictiveRange)
+        if (Vector2.Distance(obj.transform.position, EnemyObject.transform.position) < PredictiveRange)
         {
             Task.current.Fail();
             //MovementTarget = EnemyObject.transform.position;

@@ -37,8 +37,10 @@ public class Enemy : MovingObject {
             float x = transform.position.x;
             float y = transform.position.y - 0.8f;
 
-            healthText.transform.position = new Vector3(x, y, 0f);
-            healthText.text = _healthPoints + "";
+            if (healthText != null) {
+                healthText.transform.position = new Vector3(x, y, 0f);
+                healthText.text = _healthPoints + "";
+            }
             //AI_controller.run();
         }
     }
