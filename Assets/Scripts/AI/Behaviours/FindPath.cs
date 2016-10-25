@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 public class FindPath : MonoBehaviour {
 
-    public static List<Vector2> run(MovingObject currentObject, Vector3 target) {
+    public static List<Vector2> run(MovingObject currentObject, Vector3 startingPosition, Vector3 target) {
         Grid grid = GameManager.Instance.grid;
         List<Vector2> movementPath = new List<Vector2>();
-        Point startPosition = grid.WorldToGrid(currentObject.transform.position);
+        Point startPosition = grid.WorldToGrid(startingPosition);
         Point endPosition = grid.WorldToGrid(target);
 
         //Find path from player to clicked position

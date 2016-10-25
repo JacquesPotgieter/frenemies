@@ -16,13 +16,15 @@ public class MoveToPosition {
     }
 
     private static Vector2 getNextPoint(Vector2 currentPos, Vector2 target, List<Vector2> movementPath) {
-        float minDistance = 0.6f;
+        if (movementPath != null) {
+            float minDistance = 0.6f;
 
-        for (int i = 0; i < movementPath.Count; i++) {
-            float curDistance = Vector2.Distance(movementPath[i], currentPos);
+            for (int i = 0; i < movementPath.Count; i++) {
+                float curDistance = Vector2.Distance(movementPath[i], currentPos);
 
-            if (curDistance > minDistance)
-                return movementPath[i];
+                if (curDistance > minDistance)
+                    return movementPath[i];
+            }
         }
 
         return currentPos;
