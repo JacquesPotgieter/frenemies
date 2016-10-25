@@ -1,0 +1,51 @@
+﻿tree("Root")
+	sequence
+		ValidateGroup
+		parallel
+			repeat sequence
+				tree("SelectMovementTargetTree")
+				tree("BuildPathTree")
+				random
+					Wait(1.1)
+					Wait(1.5)
+					Wait(1.9)
+			repeat mute tree("MovementTree")
+			repeat sequence
+				tree("SelectShootingTargetTree")
+				tree("ShootingTree")	
+
+tree("SelectMovementTargetTree")
+	sequence
+		MoveToEnemy
+
+tree("BuildPathTree")
+	fallback
+		sequence
+			isState("Direct")
+			repeat mute tree("DirectState")
+		sequence
+			isState("Flank")
+			repeat mute tree("FlankState")
+
+tree("DirectState")
+	fallback
+		sequence
+			isState("")
+
+tree("FlankState")
+	fallback
+		sequence
+			isState("")
+
+tree("MovementTree")
+	sequence
+		Move			
+
+tree("SelectShootingTargetTree")
+	sequence
+		ShootTarget
+
+tree("ShootingTree")
+	sequence
+		ShootTarget
+		

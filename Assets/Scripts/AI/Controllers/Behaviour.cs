@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Panda;
 using Assets.Scripts.AI.Behaviours;
+using Assets.Scripts.AI.Controllers;
 
 public class Behaviour : MonoBehaviour {
 
@@ -17,6 +18,8 @@ public class Behaviour : MonoBehaviour {
     private bool HealthParticle = false;
     private int HealthPointCounter = 0;
     private float PredictiveRange = 0f;
+
+    private BehaviourGroup basicGroup = GameManager.Instance.GetComponent<BehaviourGroup>();
 
     private Vector3 PrevMovementTarget;
 
