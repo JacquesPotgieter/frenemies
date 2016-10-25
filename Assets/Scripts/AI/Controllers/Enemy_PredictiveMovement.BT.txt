@@ -11,13 +11,15 @@ tree("Movement2")
 
 tree("Movement1")
 	sequence
-		random	
-			MoveToEnemy
-			PredictiveMoveToEnemy
-			random
-				Wait(0.1)
-				Wait(0.5)
-				Wait(0.9)
+		fallback
+			sequence				
+				PredictiveMoveToEnemy
+				MoveToEnemy
+		random
+			Wait(0.1)
+			Wait(0.5)
+			Wait(0.9)
+				
 
 tree("Shooting")
 	sequence

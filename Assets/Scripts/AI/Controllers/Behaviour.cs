@@ -16,6 +16,7 @@ public class Behaviour : MonoBehaviour {
     private float range = 3f;
     private bool HealthParticle = false;
     private int HealthPointCounter = 0;
+    private float PredictiveRange = 8f;
 
     private Vector3 PrevMovementTarget;
 
@@ -107,6 +108,10 @@ public class Behaviour : MonoBehaviour {
 
         MovingObject target = FindLowestHealthTarget.LowestTarget(currentObject, targets);
         MovingObject potentialTarget = FindClosestTarget.closestTarget(currentObject, targets);
+        if(((Enemy)currentObject).getHealth() <=15)
+        {
+            Task.current.Fail();
+        }
         if (target != null && potentialTarget != null)
         {
             float distance = Vector3.Distance(currentObject.transform.position, potentialTarget.transform.position);
@@ -118,8 +123,8 @@ public class Behaviour : MonoBehaviour {
             Task.current.Succeed();
             return;
         }
-
         Task.current.Fail();
+        
     }
 
     [Task]
@@ -141,7 +146,7 @@ public class Behaviour : MonoBehaviour {
             if (HealthPointCounter % 100 == 0)
                 ((Enemy)currentObject).updateHealth(1);
 
-            ;
+            
             if (!HealthParticle)
             {
 
@@ -158,8 +163,8 @@ public class Behaviour : MonoBehaviour {
         }
         else
         {
-            currentObject.TimeBetweenShotsMain = 0.6f;
-            
+            //currentObject.TimeBetweenShotsMain = 0.6f;
+            Task.current.Fail();
             
         }
         Task.current.Succeed();
@@ -175,15 +180,21 @@ public class Behaviour : MonoBehaviour {
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
         EnemyObject = FindClosestTarget.closestTarget(obj, players);
 
-        if (Vector2.Distance(obj, EnemyObject) > 8f)
-        {
-            MovementTarget = EnemyObject.transform.position;
-        }
+       
         if (EnemyObject != null)
         {
+            if (Vector2.Distance(obj, EnemyObject) < PredictiveRange)
+            {
+                Debug.Log("This If staement causes it not to work"+Vector2.Distance(obj, EnemyObject));
+                Task.current.Fail();
+                return;
+                //MovementTarget = EnemyObject.transform.position;
+            }
+
             if (ShootingTarget != null)
             {
-                PrevMovementTarget = MovementTarget;
+                Task.current.Fail();
+                return;
             }
             else
             {
@@ -217,6 +228,7 @@ public class Behaviour : MonoBehaviour {
         }
 
         Task.current.Fail();
+        return;
     }
 
     [Task]
@@ -227,9 +239,10 @@ public class Behaviour : MonoBehaviour {
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
         EnemyObject = FindClosestTarget.closestTarget(obj, players);
 
-        if(Vector2.Distance(obj, EnemyObject)>8f)
+        if (Vector2.Distance(obj, EnemyObject) < PredictiveRange)
         {
-            ShootingTarget = EnemyObject.transform.position;
+            Task.current.Fail();
+            //MovementTarget = EnemyObject.transform.position;
         }
 
 

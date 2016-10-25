@@ -11,9 +11,13 @@ tree("Movement")
 
 tree("Shooting")
 	sequence
-		PredictivePos
-		ShootTarget
-		random
-			Wait(0.1)
-			Wait(0.5)
-			Wait(0.9)
+		fallback
+			sequence
+				PredictivePos
+				AimForMovementEnemy
+			EnemyVisible
+			ShootTarget
+			random
+				Wait(0.1)
+				Wait(0.5)
+				Wait(0.9)

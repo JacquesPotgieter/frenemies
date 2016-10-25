@@ -15,6 +15,10 @@ public class Enemy : MovingObject {
     {
         _healthPoints = _healthPoints + HP;
     }
+    public int getHealth()
+    {
+        return _healthPoints;
+    }
 
     public void init(int health, int damage, RuntimeAnimatorController animator) {
         this._healthPoints = health;

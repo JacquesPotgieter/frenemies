@@ -1,0 +1,21 @@
+﻿tree("Root")
+	parallel
+		repeat mute tree("Movement")
+		repeat mute tree("Shooting")	
+
+tree("Movement")
+	sequence
+		fallback
+			sequence	
+				SwarmMoveToEnemy
+				MoveToHidingSpot
+		InRange
+		BuildPath	
+		Move
+
+tree("Shooting")
+	sequence
+		InRange
+		AimForMovementEnemy
+		EnemyVisible
+		ShootTarget
