@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public abstract class MovingObject : MonoBehaviour {
     public float TimeBetweenShotsMain = 0.6f;
@@ -75,7 +76,7 @@ public abstract class MovingObject : MonoBehaviour {
         if (xDir < -0.5)
             startingPosition.x -= (_boxcollider.size.x + 0.2f);
 
-        Object prefab = UnityEditor.AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Bullet.prefab", typeof (Bullet));
+        UnityEngine.Object prefab = UnityEditor.AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Bullet.prefab", typeof (Bullet));
         Bullet clone = Instantiate(prefab, startingPosition, Quaternion.identity) as Bullet;
         clone.transform.SetParent(this.transform);
         clone.Init(direction, this, mainFire, bulletDamage);
@@ -114,4 +115,9 @@ public abstract class MovingObject : MonoBehaviour {
     }
 
     protected abstract void OnCollisionEnter2D(Collision2D collision);
+
+    public static implicit operator Vector2(MovingObject v)
+    {
+        throw new NotImplementedException();
+    }
 }

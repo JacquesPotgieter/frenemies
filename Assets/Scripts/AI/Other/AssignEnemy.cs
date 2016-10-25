@@ -8,11 +8,9 @@ using Panda;
 public class AssignEnemy : MonoBehaviour {
 
     private static string[] animations = { "EnemyOrgeFemale", "EnemyOrgeMale" };
-<<<<<<< HEAD
-    private static string[] enemyTypes = { /*"EnemyNormal", "EnemyHiding", "EnemyPredictiveMovement", "EnemyPredictiveShooting", */"EnemySwarm" };
-=======
-    private static string[] enemyTypes = { "EnemyNormal", "EnemyHiding", "EnemyPredictiveMovement", "EnemyPredictiveShooting", "EnemySwarm" , "EnemyFlankOne", "EnemyFlankTwo" };
->>>>>>> 691d468e4492e88a9a0079ca912c2c7251288664
+
+    private static string[] enemyTypes = { /*"EnemyNormal", "EnemyHiding", */"EnemyPredictiveMovement"/*, "EnemyPredictiveShooting", "EnemySwarm"*/ };
+
 
     public static Enemy run(Vector2 position) {
         Enemy enemy = SelectType(position);

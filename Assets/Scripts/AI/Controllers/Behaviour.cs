@@ -174,6 +174,11 @@ public class Behaviour : MonoBehaviour {
 
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
         EnemyObject = FindClosestTarget.closestTarget(obj, players);
+
+        if (Vector2.Distance(obj, EnemyObject) > 8f)
+        {
+            MovementTarget = EnemyObject.transform.position;
+        }
         if (EnemyObject != null)
         {
             if (ShootingTarget != null)
@@ -206,7 +211,7 @@ public class Behaviour : MonoBehaviour {
                 Debug.Log("left");
              
             }
-         
+            ShootingTarget = EnemyObject.transform.position;
             Task.current.Succeed();
             return;
         }
@@ -221,6 +226,14 @@ public class Behaviour : MonoBehaviour {
 
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
         EnemyObject = FindClosestTarget.closestTarget(obj, players);
+
+        if(Vector2.Distance(obj, EnemyObject)>8f)
+        {
+            ShootingTarget = EnemyObject.transform.position;
+        }
+
+
+
         if (EnemyObject != null)
         {
             if (ShootingTarget != null)
