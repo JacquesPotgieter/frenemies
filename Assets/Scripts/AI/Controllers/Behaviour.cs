@@ -11,8 +11,10 @@ public class Behaviour : MonoBehaviour {
     private Vector2 MovementTarget;
 
     private float minDistanceNotToIgnore = 3f;
-    private int SwarmSize = 2;
+    private int SwarmSize = 1;
     private float range = 3f;
+    private bool HealthParticle = false;
+    private int HealthPointCounter = 0;
 
     private Vector3 PrevMovementTarget;
 
@@ -110,14 +112,42 @@ public class Behaviour : MonoBehaviour {
     private void InRange() // Checks if inrange to shootfaster
     {
         MovingObject currentObject = gameObject.GetComponent<MovingObject>();
+        
         int count = 0;
         for (int i = 0; i < GameManager.Instance.enemies.Count; i++)
             if (Vector3.Distance(currentObject.transform.position, GameManager.Instance.enemies[i].transform.position) < range)
                 count++;
+            else if (Vector3.Distance(currentObject.transform.position, GameManager.Instance.enemies[i].transform.position) > range)
+                 count--;
         if (count > SwarmSize)
+        {
             currentObject.TimeBetweenShotsMain = 0.2f;
+            HealthPointCounter++;
+
+            if (HealthPointCounter % 100 == 0)
+                ((Enemy)currentObject).updateHealth(1);
+
+            ;
+            if (!HealthParticle)
+            {
+
+                GameObject curParticleObj = Instantiate(Resources.Load("HealthRegenParticle")) as GameObject;
+                ParticleSystem curParticle = curParticleObj.GetComponent<ParticleSystem>();
+                ((GameObject)curParticleObj).transform.parent = currentObject.transform;
+                curParticleObj.transform.localPosition = Vector3.zero;
+                
+                HealthParticle = false;
+                
+            }
+
+
+        }
         else
+        {
             currentObject.TimeBetweenShotsMain = 0.6f;
+            
+            
+        }
         Task.current.Succeed();
     }
 

@@ -11,6 +11,11 @@ public class Enemy : MovingObject {
     private int _healthPoints;
     private bool isDead = false;
 
+    public void updateHealth(int HP)
+    {
+        _healthPoints = _healthPoints + HP;
+    }
+
     public void init(int health, int damage, RuntimeAnimatorController animator) {
         this._healthPoints = health;
         this.DamageDealt = damage;
