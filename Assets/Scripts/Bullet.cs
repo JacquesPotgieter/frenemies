@@ -36,7 +36,7 @@ public class Bullet : MovingObject {
     }
 
 	void Start () {
-        base.MoveTime = 0.1f;
+        base.MoveTime = 0.075f;
         base.Start();
 	}
 

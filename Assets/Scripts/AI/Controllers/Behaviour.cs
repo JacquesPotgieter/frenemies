@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Panda;
+using Assets.Scripts.AI.Behaviours;
 
 public class Behaviour : MonoBehaviour {
 
@@ -25,7 +26,20 @@ public class Behaviour : MonoBehaviour {
         MovingObject currentObject = gameObject.GetComponent<MovingObject>();
 
         if (MovementTarget != null)
-            movementPath = FindPath.run(currentObject, MovementTarget);
+            movementPath = FindPath.run(currentObject, currentObject.transform.position, MovementTarget);
+
+        Task.current.Succeed();
+    }
+
+    [Task]
+    public void BuildFlankPath(bool opposite) { // Builds a path to be taken towards the MovementTarget
+        MovingObject currentObject = gameObject.GetComponent<MovingObject>();
+
+        if (MovementTarget != null)
+            movementPath = FindFlankPath.run(currentObject, MovementTarget, opposite);
+
+        if (movementPath == null)
+            Task.current.Fail();
 
         Task.current.Succeed();
     }

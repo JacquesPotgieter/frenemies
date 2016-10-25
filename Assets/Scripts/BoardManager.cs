@@ -79,11 +79,10 @@ public class BoardManager : MonoBehaviour {
 
         for (int i = 0; i < numberEnemies; i++) {
             Vector3 randomPosition;
-            Point point;
             Node node = null;
             while (node == null) {
                 randomPosition = RandomPosition();
-                point = GameManager.Instance.grid.WorldToGrid(randomPosition);
+                Point point = GameManager.Instance.grid.WorldToGrid(randomPosition);
                 node = GameManager.Instance.grid.Nodes[point.X, point.Y];
 
                 if (node.BadNode)

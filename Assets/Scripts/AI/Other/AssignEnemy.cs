@@ -8,7 +8,7 @@ using Panda;
 public class AssignEnemy : MonoBehaviour {
 
     private static string[] animations = { "EnemyOrgeFemale", "EnemyOrgeMale" };
-    private static string[] enemyTypes = { "EnemyNormal", "EnemyHiding", "EnemyPredictiveMovement", "EnemyPredictiveShooting", "EnemySwarm" };
+    private static string[] enemyTypes = { "EnemyNormal", "EnemyHiding", "EnemyPredictiveMovement", "EnemyPredictiveShooting", "EnemySwarm" , "EnemyFlankOne", "EnemyFlankTwo" };
 
     public static Enemy run(Vector2 position) {
         Enemy enemy = SelectType(position);
