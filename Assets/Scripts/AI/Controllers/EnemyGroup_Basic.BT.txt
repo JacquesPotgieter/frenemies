@@ -1,41 +1,43 @@
 ﻿tree("Root")
-	sequence
-		ValidateGroup
-		parallel
-			repeat sequence
+	repeat
+		parallel			
+			mute tree("StateChangesTree")
+			sequence
 				tree("SelectMovementTargetTree")
 				tree("BuildPathTree")
-				random
-					Wait(1.1)
-					Wait(1.5)
-					Wait(1.9)
-			repeat mute tree("MovementTree")
-			repeat sequence
+			mute tree("MovementTree")
+			sequence
 				tree("SelectShootingTargetTree")
-				tree("ShootingTree")	
+				ShootTarget	
+
+tree("StateChangesTree")
+	fallback
+		ShouldGroupUp
+		ShouldHide
+		ShouldAttackHeadon
+		ShouldFlank
 
 tree("SelectMovementTargetTree")
-	sequence
-		MoveToEnemy
+	fallback
+		sequence
+			isState("Hiding")
+			MovementToHidingSpot
+		sequence
+			isState("Grouping")
+			MovementToPartner		
+		MovementToClosestEnemy
 
 tree("BuildPathTree")
 	fallback
 		sequence
-			isState("Direct")
-			repeat mute tree("DirectState")
+			fallback
+				isState("Grouping")
+				isState("Hiding")
+				isState("Direct")
+			BuildPath
 		sequence
 			isState("Flank")
-			repeat mute tree("FlankState")
-
-tree("DirectState")
-	fallback
-		sequence
-			isState("")
-
-tree("FlankState")
-	fallback
-		sequence
-			isState("")
+			BuildFlankPath	
 
 tree("MovementTree")
 	sequence
@@ -43,9 +45,5 @@ tree("MovementTree")
 
 tree("SelectShootingTargetTree")
 	sequence
-		ShootTarget
-
-tree("ShootingTree")
-	sequence
-		ShootTarget
+		AimForMovementEnemy
 		

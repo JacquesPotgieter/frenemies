@@ -19,11 +19,7 @@ public class Behaviour : MonoBehaviour {
     private int HealthPointCounter = 0;
     private float PredictiveRange = 0f;
 
-    private BehaviourGroup basicGroup = GameManager.Instance.GetComponent<BehaviourGroup>();
-
     private Vector3 PrevMovementTarget;
-
-
     private List<Vector2> movementPath;
 
     #region MOVEMENT METHODS ------------------------------------------------------------------------------------------------------------------------------
@@ -247,8 +243,6 @@ public class Behaviour : MonoBehaviour {
             Task.current.Fail();
             //MovementTarget = EnemyObject.transform.position;
         }
-
-
 
         if (EnemyObject != null)
         {

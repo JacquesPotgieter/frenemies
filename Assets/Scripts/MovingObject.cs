@@ -90,7 +90,7 @@ public abstract class MovingObject : MonoBehaviour {
 
         float frozenTime = 3 * ((frozenHits - 1)/ HitsBeforeFrozen);
         if (mainFire)
-            yield return new WaitForSecondsRealtime(TimeBetweenShotsMain + frozenTime);
+            yield return new WaitForSeconds(TimeBetweenShotsMain + frozenTime);
         else
             yield return new WaitForSeconds(TimeBetweenShotsAlt + frozenTime);
         _canShoot = true;

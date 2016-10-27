@@ -67,7 +67,6 @@ namespace Assets.Scripts.AI.Behaviours {
                     node = null;
             }
 
-            Debug.Log(node.Position);
             return node.Position;
         }
     }
