@@ -9,6 +9,8 @@ public class FindClosestHidingSpot : MonoBehaviour {
     public static Vector2 run(MovingObject currentObject, MovingObject target) {
         GameManager gameManger = GameManager.Instance;
 
+        Vector2 hidingSpot = currentObject.transform.position;
+
         for (int x = -2; x < 33; x++) 
             for (int y = -3; y < 20; y++) {
                 Vector2 vector = new Vector2(x, y);
@@ -19,13 +21,13 @@ public class FindClosestHidingSpot : MonoBehaviour {
 
                     if (node != null && !node.BadNode) {
                         if (canHide(node, currentObject, target)) {
-                            return node.Position;
+                            hidingSpot = node.Position;
                         }
                     }
                 }
             }
 
-        return currentObject.transform.position;
+        return hidingSpot;
     }
 
     private static bool canHide(Node node, MovingObject currentObj, MovingObject enemyObj) {

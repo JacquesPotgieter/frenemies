@@ -7,17 +7,13 @@ using System.Text;
 using UnityEngine;
 
 namespace Assets.Scripts.AI.Controllers {
-    class BehaviourGroup : MonoBehaviour{
+    class BehaviourPlayer : MonoBehaviour {
 
-        private static MovingObject EnemyObject;
-        private static Vector2 ShootingTarget;
-        private static Vector2 MovementTarget;
-        private static bool LeftFlanked = false;
+        private MovingObject EnemyObject;
+        private Vector2 ShootingTarget;
+        private Vector2 MovementTarget;
 
-        private bool flankDirection;
-        private bool hiding = false;
-        public String state = "Direct";
-        private MovingObject partner;
+        public String state = "Circle";
 
         private List<Vector2> movementPath;
 
@@ -46,7 +42,8 @@ namespace Assets.Scripts.AI.Controllers {
 
             MovingObject obj = gameObject.GetComponent<MovingObject>();
 
-            ShootPosition.run(obj, ShootingTarget, mainFire);
+            if (ShootingTarget != null)
+                ShootPosition.run(obj, ShootingTarget, mainFire);
 
             Task.current.Succeed();
         }
@@ -70,22 +67,11 @@ namespace Assets.Scripts.AI.Controllers {
 
         #region Select Movement Tree
         [Task]
-        public void MovementToPartner() {
-            if (partner != null) {
-                MovementTarget = partner.transform.position;
-                Task.current.Succeed();
-                return;
-            }
-
-            Task.current.Fail();
-        }
-
-        [Task]
         public void MovementToClosestEnemy() {
             MovingObject obj = gameObject.GetComponent<MovingObject>();
 
-            List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
-            EnemyObject = FindClosestTarget.closestTarget(obj, players);
+            List<MovingObject> enemies = GameManager.Instance.enemies.Cast<MovingObject>().ToList();
+            EnemyObject = FindClosestTarget.closestTarget(obj, enemies);
             if (EnemyObject != null) {
                 MovementTarget = EnemyObject.transform.position;
                 Task.current.Succeed();
@@ -99,9 +85,10 @@ namespace Assets.Scripts.AI.Controllers {
         public void MovementToHidingSpot() {
             MovingObject obj = gameObject.GetComponent<MovingObject>();
 
-            List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
-            EnemyObject = FindClosestTarget.closestTarget(obj, players);
-            MovementTarget = FindClosestHidingSpot.run(obj, EnemyObject);
+            List<MovingObject> enemies = GameManager.Instance.enemies.Cast<MovingObject>().ToList();
+            EnemyObject = FindClosestTarget.closestTarget(obj, enemies);
+            if (EnemyObject != null)
+                MovementTarget = FindClosestHidingSpot.run(obj, EnemyObject);
 
             if (MovementTarget.Equals((Vector2)obj.transform.position)) {
                 Task.current.Fail();
@@ -124,19 +111,16 @@ namespace Assets.Scripts.AI.Controllers {
         }
 
         [Task]
-        public void BuildFlankPath() {
+        public void BuildCirclePath() {
             MovingObject currentObject = gameObject.GetComponent<MovingObject>();
 
             if (MovementTarget != null) {
-                movementPath = FindFlankPath.run(currentObject, MovementTarget, flankDirection);
+                float max = 0.5f;
+                movementPath = FindPlayerPath.run(currentObject, MovementTarget, new Vector2(0f, UnityEngine.Random.Range(-1 * max, max)));
             }
-
-            if (movementPath == null)
-                Task.current.Fail();
 
             Task.current.Succeed();
         }
-
         #endregion
 
         #region Select Shooting Tree
@@ -156,51 +140,18 @@ namespace Assets.Scripts.AI.Controllers {
         #endregion
 
         #region State Changer Tree
-        [Task]
-        public void ShouldGroupUp() {
-            if (!state.Equals("Grouping")) {
-                MovingObject obj = gameObject.GetComponent<MovingObject>();
-
-                foreach (MovingObject other in GameManager.Instance.enemies) {
-                    BehaviourGroup group = other.GetComponent<BehaviourGroup>();
-
-                    if (group != null && group != this || group.state != "Hiding") {
-                        partner = other;
-                    }
-                }
-
-                if (partner != null 
-                    && Vector2.Distance(obj.transform.position, partner.transform.position) > 10f) {
-                    state = "Grouping";
-                    Task.current.Succeed();
-                    return;
-                }
-            } else {
-                if (partner != null 
-                    && (Vector2.Distance(gameObject.transform.position, partner.transform.position) <= 4f
-                    || partner.GetComponent<BehaviourGroup>().state.Equals("Hiding"))) {
-                    Task.current.Fail();
-                    return;
-                } else {
-                    Task.current.Succeed();
-                    return;
-                }
-            }
-
-            Task.current.Fail();
-        }
 
         [Task]
         public void ShouldHide() {
-            if (state.Equals("Hiding")) {
-                Task.current.Succeed();
-                return;
-            } else {
-                Enemy obj = gameObject.GetComponent<Enemy>();
-                if (obj.getHealth() <= 10) {
-                    state = "Hiding";
-                    Task.current.Succeed();
-                    return;
+            if (!state.Equals("Hiding") && false) {
+                MovingObject obj = gameObject.GetComponent<MovingObject>();
+                if (EnemyObject != null) {
+                    if (Vector2.Distance(obj.transform.position, EnemyObject.transform.position) < 1f) {
+                        Debug.Log(Vector2.Distance(obj.transform.position, EnemyObject.transform.position));
+                        state = "Hiding";
+                        Task.current.Succeed();
+                        return;
+                    }
                 }
             }
 
@@ -208,37 +159,20 @@ namespace Assets.Scripts.AI.Controllers {
         }
 
         [Task]
-        public void ShouldAttackHeadon() {
-            if (!state.Equals("Direct")) {
+        public void ShouldCircle() {
+            if (!state.Equals("Circle")) {
                 MovingObject obj = gameObject.GetComponent<MovingObject>();
-                if (Vector2.Distance(obj.transform.position, MovementTarget) < 3f) {
-                    state = "Direct";
-                    Task.current.Succeed();
-                    return;
+                if (EnemyObject != null) {
+                    if (Vector2.Distance(obj.transform.position, EnemyObject.transform.position) > 1f) {
+                        state = "Circle";
+                        Task.current.Succeed();
+                        return;
+                    }
                 }
             }
 
             Task.current.Fail();
         }
-
-        [Task]
-        public void ShouldFlank() {
-            if (!state.Equals("Flank")) {
-                MovingObject obj = gameObject.GetComponent<MovingObject>();
-                if (Vector2.Distance(obj.transform.position, MovementTarget) >= 3f) {
-                    state = "Flank";
-                    Task.current.Succeed();
-
-                    flankDirection = LeftFlanked;
-                    LeftFlanked = !LeftFlanked;
-                    return;
-                }
-            }
-
-            Task.current.Fail();
-        }
-
-
         #endregion
 
     }

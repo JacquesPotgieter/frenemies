@@ -1,0 +1,41 @@
+﻿tree("Root")
+	repeat
+		parallel			
+			mute tree("StateChangesTree")
+			sequence
+				tree("SelectMovementTargetTree")
+				tree("BuildPathTree")
+			mute tree("MovementTree")
+			sequence
+				tree("SelectShootingTargetTree")
+				ShootTarget	
+
+tree("StateChangesTree")
+	fallback
+		ShouldHide
+		ShouldCircle
+
+tree("SelectMovementTargetTree")
+	fallback
+		sequence
+			isState("Hiding")
+			MovementToHidingSpot	
+		MovementToClosestEnemy
+
+tree("BuildPathTree")
+	fallback
+		sequence
+			isState("Hiding")				
+			BuildPath
+		sequence
+			isState("Circle")
+			BuildCirclePath	
+
+tree("MovementTree")
+	sequence
+		Move			
+
+tree("SelectShootingTargetTree")
+	sequence
+		AimForMovementEnemy
+		

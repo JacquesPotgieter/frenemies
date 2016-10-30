@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;		//Allows us to use Lists. 
-using UnityEngine.UI;					//Allows us to use UI.
+using UnityEngine.UI;                   //Allows us to use UI.
+using Panda;
 
 public class GameManager : MonoBehaviour {
 
@@ -12,6 +13,8 @@ public class GameManager : MonoBehaviour {
     public Text _levelText;
     public GameObject _levelImage;
     public bool DebugMode = false;
+    public bool AI_Player1 = false;
+    public bool AI_Player2 = false;
     [HideInInspector] public int HealthP1 = 100;
     [HideInInspector] public int HealthP2 = 100;              
     public static GameManager Instance = null;  
@@ -22,8 +25,8 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public Grid grid;
     [HideInInspector] public Transform enemyHolder;
     [HideInInspector] public int totalEnemiesKilled;
-    public bool SpecialObjectP1 = false;
-    public bool SpecialObjectP2 = false;            
+    [HideInInspector] public bool SpecialObjectP1 = false;
+    [HideInInspector] public bool SpecialObjectP2 = false;            
                       
     
     void Awake() {
@@ -66,6 +69,9 @@ public class GameManager : MonoBehaviour {
             infoText.text = "Debug";
         else
             infoText.text = "";
+
+        players[0].GetComponent<PandaBehaviour>().enabled = AI_Player1;
+        players[1].GetComponent<PandaBehaviour>().enabled = AI_Player2;
     }
 
     public void AddEnemyToList(Enemy script) {
