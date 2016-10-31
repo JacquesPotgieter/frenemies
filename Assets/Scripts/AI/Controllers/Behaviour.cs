@@ -11,13 +11,14 @@ public class Behaviour : MonoBehaviour {
     private MovingObject EnemyObject;
     private Vector2 ShootingTarget;
     private Vector2 MovementTarget;
+    private int c = 0;
 
     private float minDistanceNotToIgnore = 3f;
     private int SwarmSize = 1;
     private float range = 3f;
     private bool HealthParticle = false;
     private int HealthPointCounter = 0;
-    private float PredictiveRange = 0f;
+    private float PredictiveRange = 5f;
 
     private Vector3 PrevMovementTarget;
     private List<Vector2> movementPath;
@@ -61,6 +62,7 @@ public class Behaviour : MonoBehaviour {
 
     [Task]
     public void MoveToEnemy() { // Changes MovementTarget to a ClosestEnemy
+        Debug.Log("1792982");
         MovingObject obj = gameObject.GetComponent<MovingObject>();
 
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
@@ -175,7 +177,8 @@ public class Behaviour : MonoBehaviour {
     public void PredictiveMoveToEnemy()
     { // Changes MovementTarget to a Predicted location of enemy
         MovingObject obj = gameObject.GetComponent<MovingObject>();
-
+        c++;
+        Debug.Log("hslsdjajsd"+c);
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
         EnemyObject = FindClosestTarget.closestTarget(obj, players);
 
@@ -184,41 +187,45 @@ public class Behaviour : MonoBehaviour {
         {
             if (Vector2.Distance(obj.transform.position, EnemyObject.transform.position) < PredictiveRange)
             {
+                Debug.Log("This If staement causes it not to work" + Vector2.Distance(obj.transform.position, EnemyObject.transform.position));
+                MoveToEnemy();
                 Task.current.Fail();
                 return;
                 //MovementTarget = EnemyObject.transform.position;
             }
 
-            if (ShootingTarget != null) //#################################################################################### Seems to always be true
+            if (PrevMovementTarget == null) //#################################################################################### Seems to always be true
             {
                 Debug.Log("This If staement causes it not to work" + Vector2.Distance(obj.transform.position, EnemyObject.transform.position));
+                PrevMovementTarget = EnemyObject.transform.position;
                 Task.current.Fail();
-                return;
+                //PrevMovementTarget = EnemyObject.transform.position;
+                //return;
             }
             else
             {
-                PrevMovementTarget = EnemyObject.transform.position;
+                //PrevMovementTarget = EnemyObject.transform.position;
             }
 
             Vector3 finalpos = EnemyObject.transform.position;
             Vector3 velocity = (EnemyObject.transform.position - PrevMovementTarget) / Time.deltaTime;
 
             velocity *= Time.deltaTime;
-            velocity *= 0.6f;
+            velocity *= 0.3f;
             finalpos += velocity;
 
-            if (EnemyObject.transform.position.x - PrevMovementTarget.x > 0)
+            if (EnemyObject.transform.position.x > PrevMovementTarget.x )
             {
                 MovementTarget = finalpos;
                 MovementTarget.x += 2.85f;
-                Debug.Log("right");
+                Debug.Log("right"+c);
               
             }
             else
             {
                 MovementTarget = finalpos;
                 MovementTarget.x += -2.85f;
-                Debug.Log("left");
+                Debug.Log("left"+c);
              
             }
             ShootingTarget = EnemyObject.transform.position;
@@ -226,7 +233,7 @@ public class Behaviour : MonoBehaviour {
             return;
         }
 
-        Task.current.Fail();
+        //Task.current.Fail();
         return;
     }
 
