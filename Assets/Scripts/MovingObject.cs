@@ -47,6 +47,8 @@ public abstract class MovingObject : MonoBehaviour {
     public void TryShoot(float xDir, float yDir, bool mainFire, int bulletDamage) {
         if (_canShoot) {
             StartCoroutine(Shoot(xDir, yDir, mainFire, bulletDamage));
+        } else {
+            _animator.SetTrigger("Idle");
         }
     }
 
