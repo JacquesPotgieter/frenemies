@@ -14,7 +14,7 @@ tree("Movement1")
 		fallback
 			sequence				
 				PredictiveMoveToEnemy
-			MoveToEnemy
+				MoveToEnemy
 		random
 			Wait(0.1)
 			Wait(0.5)

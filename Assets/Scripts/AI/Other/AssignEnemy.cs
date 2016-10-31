@@ -9,7 +9,7 @@ public class AssignEnemy : MonoBehaviour {
 
     private static string[] animations = { "EnemyOrgeFemale", "EnemyOrgeMale" };
 
-    private static string[] enemyTypes = { "EnemyNormal", /* "EnemyHiding", "EnemyPredictiveMovement" , "EnemyPredictiveShooting" , "EnemySwarm", "EnemyGroup" */ };
+    private static string[] enemyTypes = { /*"EnemyNormal",  "EnemyHiding", "EnemyPredictiveMovement" ,*/ "EnemyPredictiveShooting" /* , "EnemySwarm", "EnemyGroup" */ };
 
 
     public static Enemy run(Vector2 position) {
