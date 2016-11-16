@@ -41,10 +41,6 @@ public class PanelManager : MonoBehaviour {
 
 		m_Open = anim;
 		m_Open.SetBool(m_OpenParameterId, true);
-
-		GameObject go = FindFirstEnabledSelectable(anim.gameObject);
-
-		SetSelected(go);
 	}
 
 	static GameObject FindFirstEnabledSelectable (GameObject gameObject)
@@ -66,7 +62,6 @@ public class PanelManager : MonoBehaviour {
 			return;
 
 		m_Open.SetBool(m_OpenParameterId, false);
-		SetSelected(m_PreviouslySelected);
 		StartCoroutine(DisablePanelDeleyed(m_Open));
 		m_Open = null;
 	}
@@ -87,10 +82,5 @@ public class PanelManager : MonoBehaviour {
 
 		if (wantToClose)
 			anim.gameObject.SetActive(false);
-	}
-
-	private void SetSelected(GameObject go)
-	{
-		EventSystem.current.SetSelectedGameObject(go);
 	}
 }
