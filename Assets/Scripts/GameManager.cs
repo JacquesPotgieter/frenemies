@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;		//Allows us to use Lists. 
 using UnityEngine.UI;                   //Allows us to use UI.
 using Panda;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
+
+    public static GameManager Instance = null;
 
     public int NumberEnemies = 1;
     public float LevelStartDelay = 2f;						
@@ -12,12 +15,9 @@ public class GameManager : MonoBehaviour {
     public Text infoText;
     public Text _levelText;
     public GameObject _levelImage;
-    public bool DebugMode = false;
-    public bool AI_Player1 = false;
-    public bool AI_Player2 = false;
     [HideInInspector] public int HealthP1 = 100;
-    [HideInInspector] public int HealthP2 = 100;              
-    public static GameManager Instance = null;  
+    [HideInInspector] public int HealthP2 = 100;            
+      
     
     [HideInInspector] public List<Player> players;
     [HideInInspector] public List<Enemy> enemies;
@@ -26,8 +26,9 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public Transform enemyHolder;
     [HideInInspector] public int totalEnemiesKilled;
     [HideInInspector] public bool SpecialObjectP1 = false;
-    [HideInInspector] public bool SpecialObjectP2 = false;            
-                      
+    [HideInInspector] public bool SpecialObjectP2 = false;
+
+    [HideInInspector] public GlobalSettings globalSettings = null;              
     
     void Awake() {
         if (Instance == null)
@@ -35,15 +36,16 @@ public class GameManager : MonoBehaviour {
         else if (Instance != this)
             Destroy(gameObject);
 
-        DontDestroyOnLoad(gameObject);
         enemies = new List<Enemy>();
         players = new List<Player>();
         grid = GameObject.Find("Grid").GetComponent<Grid>();
         infoText = GameObject.Find("GameInfo").GetComponent<Text>();
         enemyHolder = new GameObject("Enemies").transform;
         _boardScript = GetComponent<BoardManager>();
-        DontDestroyOnLoad(_boardScript);
         InitGame();
+
+        globalSettings = GameObject.Find("GlobalSettings").GetComponent<GlobalSettings>();
+        this.NumberEnemies = globalSettings.startingLevel;
     }
 
     void OnLevelWasLoaded(int index) {
@@ -65,13 +67,16 @@ public class GameManager : MonoBehaviour {
     }
 
     void Update() {
-        if (DebugMode)
+        if (globalSettings.DebugMode)
             infoText.text = "Debug";
         else
             infoText.text = "";
 
-        players[0].GetComponent<PandaBehaviour>().enabled = AI_Player1;
-        players[1].GetComponent<PandaBehaviour>().enabled = AI_Player2;
+        if (Input.GetKeyDown(KeyCode.Escape) == true)
+            StartCoroutine(OnEscapeStart());
+
+        players[0].GetComponent<PandaBehaviour>().enabled = globalSettings.AI_Player_1;
+        players[1].GetComponent<PandaBehaviour>().enabled = globalSettings.AI_Player_2;
     }
 
     public void AddEnemyToList(Enemy script) {
@@ -79,12 +84,9 @@ public class GameManager : MonoBehaviour {
     }
 
     public void GameOver() {
-        if (HealthP1 < 0)
-            _levelText.text = totalEnemiesKilled + " Enemies died before Player 1";
-        else
-            _levelText.text = totalEnemiesKilled + " Enemies died before Player 2";
-        _levelImage.SetActive(true);
         enabled = false;
+
+        StartCoroutine(BackToMenu());
     }
 
     public void checkIfAllEnemiesKilled(Enemy enemy) {
@@ -111,7 +113,22 @@ public class GameManager : MonoBehaviour {
         _boardScript.SpawnEnemies(NumberEnemies, enemyHolder, LevelStartDelay);
     }
 
-    private void Restart() {
-        Application.LoadLevel(Application.loadedLevel);
+    public IEnumerator BackToMenu() {
+        foreach (MovingObject cur in enemies)
+            cur.enabled = false;
+        foreach (MovingObject cur in players)
+            cur.enabled = false;
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene(0);
+    }
+
+    private IEnumerator OnEscapeStart() {
+        Debug.Log("Started pressing Escape");
+        StartCoroutine(BackToMenu());
+
+        if (Input.GetKeyDown(KeyCode.Escape) == true) {
+            
+        }
+        yield return new WaitForSeconds(0);
     }
 }

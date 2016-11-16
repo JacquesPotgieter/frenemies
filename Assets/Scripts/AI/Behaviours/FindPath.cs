@@ -15,7 +15,7 @@ public class FindPath : MonoBehaviour {
 
         int count = 0;
         LineRenderer lr = currentObject.GetComponent<LineRenderer>();
-        if (GameManager.Instance.DebugMode) {            
+        if (GameManager.Instance.globalSettings.DebugMode) {            
             lr.SetVertexCount(100);  //Need a higher number than 2, or crashes out
             lr.SetWidth(0.1f, 0.1f);
             lr.SetColors(Color.yellow, Color.yellow);
@@ -26,13 +26,13 @@ public class FindPath : MonoBehaviour {
             Vector2 curPos = grid.GridToWorld(bc.position);
             movementPath.Add(curPos);
 
-            if (GameManager.Instance.DebugMode) {
+            if (GameManager.Instance.globalSettings.DebugMode) {
                 lr.SetPosition(count, curPos);
             }            
             bc = bc.next;
             count += 1;
         }
-        if (GameManager.Instance.DebugMode)
+        if (GameManager.Instance.globalSettings.DebugMode)
             lr.SetVertexCount(count);
 
         return movementPath;

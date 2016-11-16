@@ -36,7 +36,7 @@ public class Node {
 
         //Draw Node on screen for debugging purposes
         Debug = GameObject.Instantiate(Resources.Load("Node")) as GameObject;
-        if (GameManager.Instance.DebugMode) {
+        if (GameManager.Instance.globalSettings != null && GameManager.Instance.globalSettings.DebugMode) {
             Debug.transform.position = Position;
             Debug.GetComponent<DebugDisplay>().X = X;
             Debug.GetComponent<DebugDisplay>().Y = Y;
@@ -45,7 +45,7 @@ public class Node {
        }
 
     public void SetColor(Color color) {
-        if (GameManager.Instance.DebugMode)
+        if (GameManager.Instance.globalSettings != null && GameManager.Instance.globalSettings.DebugMode)
             Debug.transform.GetComponent<SpriteRenderer>().color = color;
     }
 
@@ -135,7 +135,7 @@ public class Node {
 
     //debug draw for connection lines
     public void DrawConnections() {
-        if (GameManager.Instance.DebugMode) {
+        if (GameManager.Instance.globalSettings.DebugMode) {
             if (Top != null) Top.DrawLine();
             if (Bottom != null) Bottom.DrawLine();
             if (Left != null) Left.DrawLine();

@@ -25,20 +25,20 @@ namespace Assets.Scripts.AI.Behaviours {
             }
 
             LineRenderer lr = currentObject.GetComponent<LineRenderer>();
-            if (GameManager.Instance.DebugMode) {
+            if (GameManager.Instance.globalSettings.DebugMode) {
                 lr.SetVertexCount(100);  //Need a higher number than 2, or crashes out
                 lr.SetWidth(0.1f, 0.1f);
             }
 
             int count = 0;
             foreach (Vector2 pos in firstPart) {
-                if (GameManager.Instance.DebugMode) {
+                if (GameManager.Instance.globalSettings.DebugMode) {
                     lr.SetPosition(count, pos);
                 }
                 count++;
             }
 
-            if (GameManager.Instance.DebugMode)
+            if (GameManager.Instance.globalSettings.DebugMode)
                 lr.SetVertexCount(count);
             return firstPart;
         }
