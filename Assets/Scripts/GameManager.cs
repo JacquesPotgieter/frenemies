@@ -46,6 +46,8 @@ public class GameManager : MonoBehaviour {
 
         globalSettings = GameObject.Find("GlobalSettings").GetComponent<GlobalSettings>();
         this.NumberEnemies = globalSettings.startingLevel;
+
+        AudioListener.volume = globalSettings.soundLevel;
     }
 
     void OnLevelWasLoaded(int index) {

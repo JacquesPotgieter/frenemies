@@ -9,8 +9,15 @@ public class GlobalSettings : MonoBehaviour {
     public bool AI_Player_2 = false;
     public bool DebugMode = false;
 
+    public bool normal = true;
+    public bool hiding = true;
+    public bool predMovement = true;
+    public bool predShooting = true;
+    public bool swarm = true;
+    public bool group = true;
+
     public int startingLevel = 4;
-    public int soundLevel = 100;
+    public float soundLevel = 1;
 
     void Awake() {
         if (Instance == null) {

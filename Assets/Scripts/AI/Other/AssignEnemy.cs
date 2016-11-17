@@ -9,9 +9,6 @@ public class AssignEnemy : MonoBehaviour {
 
     private static string[] animations = { "EnemyOrgeFemale", "EnemyOrgeMale" };
 
-    private static string[] enemyTypes = { /*"EnemyNormal",  "EnemyHiding", "EnemyPredictiveMovement" , "EnemyPredictiveShooting" ,*/ "EnemySwarm" /*, "EnemyGroup" */ };
-
-
     public static Enemy run(Vector2 position) {
         Enemy enemy = SelectType(position);
         enemy.enabled = false;
@@ -26,7 +23,21 @@ public class AssignEnemy : MonoBehaviour {
     }
 
     private static Enemy SelectType(Vector2 position) {
-        int pos = Random.Range(0, enemyTypes.Length);
+        ArrayList enemyTypes = new ArrayList();
+        if (GlobalSettings.Instance.hiding)
+            enemyTypes.Add("EnemyHiding");
+        if (GlobalSettings.Instance.predMovement)
+            enemyTypes.Add("EnemyPredictiveMovement");
+        if (GlobalSettings.Instance.predShooting)
+            enemyTypes.Add("EnemyPredictiveShooting");
+        if (GlobalSettings.Instance.swarm)
+            enemyTypes.Add("EnemySwarm");
+        if (GlobalSettings.Instance.group)
+            enemyTypes.Add("EnemyGroup");
+        if (GlobalSettings.Instance.normal || enemyTypes.Count < 1)
+            enemyTypes.Add("EnemyNormal");
+
+        int pos = Random.Range(0, enemyTypes.Count);
         GameObject instance = Instantiate(Resources.Load("Enemy/" + enemyTypes[pos])) as GameObject;
         instance.transform.position = position;
         GameManager.Instance.AddEnemyToList(instance.GetComponent<Enemy>());
