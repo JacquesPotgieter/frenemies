@@ -62,7 +62,6 @@ public class Behaviour : MonoBehaviour {
 
     [Task]
     public void MoveToEnemy() { // Changes MovementTarget to a ClosestEnemy
-        Debug.Log("1792982");
         MovingObject obj = gameObject.GetComponent<MovingObject>();
 
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
@@ -178,7 +177,7 @@ public class Behaviour : MonoBehaviour {
     { // Changes MovementTarget to a Predicted location of enemy
         MovingObject obj = gameObject.GetComponent<MovingObject>();
         c++;
-        Debug.Log("hslsdjajsd"+c);
+        //Debug.Log("hslsdjajsd"+c);
         List<MovingObject> players = GameManager.Instance.players.Cast<MovingObject>().ToList();
         EnemyObject = FindClosestTarget.closestTarget(obj, players);
 
@@ -187,7 +186,7 @@ public class Behaviour : MonoBehaviour {
         {
             if (Vector2.Distance(obj.transform.position, EnemyObject.transform.position) < PredictiveRange)
             {
-                Debug.Log("This If staement causes it not to work" + Vector2.Distance(obj.transform.position, EnemyObject.transform.position));
+                //Debug.Log("This If staement causes it not to work" + Vector2.Distance(obj.transform.position, EnemyObject.transform.position));
                 MoveToEnemy();
                 Task.current.Fail();
                 return;
@@ -196,7 +195,7 @@ public class Behaviour : MonoBehaviour {
 
             if (PrevMovementTarget == null) //#################################################################################### Seems to always be true
             {
-                Debug.Log("This If staement causes it not to work" + Vector2.Distance(obj.transform.position, EnemyObject.transform.position));
+                //Debug.Log("This If staement causes it not to work" + Vector2.Distance(obj.transform.position, EnemyObject.transform.position));
                 PrevMovementTarget = EnemyObject.transform.position;
                 Task.current.Fail();
                 //PrevMovementTarget = EnemyObject.transform.position;
@@ -218,14 +217,14 @@ public class Behaviour : MonoBehaviour {
             {
                 MovementTarget = finalpos;
                 MovementTarget.x += 2.85f;
-                Debug.Log("right"+c);
+                //Debug.Log("right"+c);
               
             }
             else
             {
                 MovementTarget = finalpos;
                 MovementTarget.x += -2.85f;
-                Debug.Log("left"+c);
+                //Debug.Log("left"+c);
              
             }
             ShootingTarget = EnemyObject.transform.position;
@@ -289,7 +288,7 @@ public class Behaviour : MonoBehaviour {
             {
                 ShootingTarget = finalpos;
                 ShootingTarget.x += -1.85f;
-                Debug.Log("left");
+                //Debug.Log("left");
                 //if (EnemyObject.transform.position.y - PrevMovementTarget.y > 0)
                 //{
                 //    ShootingTarget.y += 1.15f;

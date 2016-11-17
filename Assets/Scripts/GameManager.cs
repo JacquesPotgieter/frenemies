@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager Instance = null;
 
-    public int NumberEnemies = 1;
+    private int NumberEnemies = 0;
     public float LevelStartDelay = 2f;						
     public float TurnDelay = 0.1f;
     public Text infoText;
@@ -41,17 +41,13 @@ public class GameManager : MonoBehaviour {
         grid = GameObject.Find("Grid").GetComponent<Grid>();
         infoText = GameObject.Find("GameInfo").GetComponent<Text>();
         enemyHolder = new GameObject("Enemies").transform;
-        _boardScript = GetComponent<BoardManager>();
-        InitGame();
+        _boardScript = GetComponent<BoardManager>();        
 
         globalSettings = GameObject.Find("GlobalSettings").GetComponent<GlobalSettings>();
         this.NumberEnemies = globalSettings.startingLevel;
 
         AudioListener.volume = globalSettings.soundLevel;
-    }
 
-    void OnLevelWasLoaded(int index) {
-        NumberEnemies++;
         InitGame();
     }
 
@@ -77,8 +73,8 @@ public class GameManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Escape) == true)
             StartCoroutine(OnEscapeStart());
 
-        players[0].GetComponent<PandaBehaviour>().enabled = globalSettings.AI_Player_1;
-        players[1].GetComponent<PandaBehaviour>().enabled = globalSettings.AI_Player_2;
+        GameObject.Find("Player_P1").GetComponent<PandaBehaviour>().enabled = globalSettings.AI_Player_1;
+        GameObject.Find("Player_P2").GetComponent<PandaBehaviour>().enabled = globalSettings.AI_Player_2;
     }
 
     public void AddEnemyToList(Enemy script) {
@@ -120,7 +116,7 @@ public class GameManager : MonoBehaviour {
             cur.enabled = false;
         foreach (MovingObject cur in players)
             cur.enabled = false;
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(0);
         SceneManager.LoadScene(0);
     }
 

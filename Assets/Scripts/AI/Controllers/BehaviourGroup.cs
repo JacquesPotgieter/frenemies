@@ -164,7 +164,7 @@ namespace Assets.Scripts.AI.Controllers {
                 foreach (MovingObject other in GameManager.Instance.enemies) {
                     BehaviourGroup group = other.GetComponent<BehaviourGroup>();
 
-                    if (group != null && group != this || group.state != "Hiding") {
+                    if (group != null && (group != this || group.state != "Hiding")) {
                         partner = other;
                     }
                 }

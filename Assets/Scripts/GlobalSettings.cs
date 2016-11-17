@@ -17,7 +17,7 @@ public class GlobalSettings : MonoBehaviour {
     public bool group = true;
 
     public int startingLevel = 4;
-    public float soundLevel = 1;
+    public float soundLevel = 0.5f;
 
     void Awake() {
         if (Instance == null) {

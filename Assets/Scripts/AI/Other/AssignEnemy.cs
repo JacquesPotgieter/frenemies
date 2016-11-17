@@ -9,12 +9,17 @@ public class AssignEnemy : MonoBehaviour {
 
     private static string[] animations = { "EnemyOrgeFemale", "EnemyOrgeMale" };
 
+    private static int HealthMin = 5;
+    private static int HealthMax = 50;
+    private static int DamageMin = 3;
+    private static int DamageMax = 12;
+
     public static Enemy run(Vector2 position) {
         Enemy enemy = SelectType(position);
         enemy.enabled = false;
 
         int healthPoints = getHealthPoints();
-        int damageDealt = getDamageDealt();
+        int damageDealt = getDamageDealt(healthPoints);
         RuntimeAnimatorController animator = getAnimatorController();
 
         enemy.init(healthPoints, damageDealt, animator);
@@ -51,10 +56,14 @@ public class AssignEnemy : MonoBehaviour {
     }
 
     private static int getHealthPoints() {
-        return 20;
+        return Random.Range(HealthMin, HealthMax);
     }
 
-    private static int getDamageDealt() {
-        return 5;
+    private static int getDamageDealt(int health) {
+        float perc = (health - HealthMin) / (HealthMax - HealthMin);
+
+        int damage = (int) perc * (DamageMax - DamageMin) + DamageMin;
+
+        return damage;
     }
 }
